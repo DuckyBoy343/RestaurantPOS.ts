@@ -1,0 +1,41 @@
+# Node modules
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build output
+**/.next/
+**/.turbo/
+**/dist/
+**/out/
+**/.vite/
+**/coverage/
+
+# Logs
+logs
+*.log
+logs/**/*.log
+
+# Env files
+.env
+.env.*.local
+.env.local
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# TypeScript
+**/*.tsbuildinfo
+
+# Database (optional)
+*.mdf
+*.ldf
+
+# VS Code
+.vscode/
