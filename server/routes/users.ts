@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { getRolesList, createRole, renovateRole, eliminateRole, getRoleId } from '../controllers/rolesController';
+import { getUsersList, getUserId, createUser, renovateUser, eliminateUser } from '../controllers/usersController';
 
 const router = Router();
 
-router.get('/', getRolesList);
-router.post('/', createRole);
-router.put('/:id', renovateRole);
-router.delete('/:id', eliminateRole);
-router.get('/:id', getRoleId);
+router.get('/', getUsersList);
+router.post('/', createUser);
+router.put('/:id', renovateUser);
+router.delete('/:id', eliminateUser);
+router.get('/:id', getUserId);
 
 export default router;

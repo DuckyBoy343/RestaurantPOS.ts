@@ -1,53 +1,63 @@
-import { poolPromise } from '../utils/db';
+import db from '../utils/db';
+import { Product } from '../types/Product';
 
-export const getAllProducts = async () => {
-  const pool = await poolPromise;
-  const result = await pool.request().query('SELECT * FROM Productos');
-  return result.recordset;
-};
+export async function getAllProducts(): Promise<Product[]> {
+  return await db<Product>('Productos').select('*');
+}
 
-export const addProduct = async (Producto_nombre: string, Producto_descripcion: string, id_Categoria: number, 
-    Producto_precio: number, Producto_costo: number, Producto_cantidad: number, Producto_cantidad_minima: number, Producto_disponible: boolean) => {
-  const pool = await poolPromise;
-  await pool.request()
-    .input('Producto_nombre', Producto_nombre)
-    .input('Producto_descripcion', Producto_descripcion)
-    .input('id_Categoria', id_Categoria)
-    .input('Producto_precio', Producto_precio)
-    .input('Producto_costo', Producto_costo)
-    .input('Producto_cantidad', Producto_cantidad)
-    .input('Producto_cantidad_minima', Producto_cantidad_minima)
-    .input('Producto_disponible', Producto_disponible)
-    .query('INSERT INTO Products (Producto_nombre, Producto_descripcion, id_Categoria, Producto_precio, Producto_costo, Producto_cantidad, Producto_cantidad_minima, Producto_disponible) VALUES (@Producto_nombre, @Producto_descripcion, @id_Categoria, @Producto_precio, @Producto_costo, @Producto_cantidad, @Producto_cantidad_minima, @Producto_disponible)');
-};
+export async function getProductById(id_Producto: number): Promise<Product | undefined> {
+  return await db<Product>('Productos')
+    .where({ id_Producto })
+    .first();
+}
 
-export const getProductById = async (id_Producto: number) => {
-  const pool = await poolPromise;
-  const result = await pool.request()
-    .input('id_Producto', id_Producto)
-    .query('SELECT * FROM Productos WHERE id_Producto = @id');
-  return result.recordset[0];
-};
+export async function addProduct(
+  Producto_nombre: string,
+  Producto_descripcion: string,
+  id_Categoria: number,
+  Producto_precio: number,
+  Producto_costo: number,
+  Producto_cantidad: number,
+  Producto_cantidad_minima: number,
+  Producto_disponible: boolean
+): Promise<void> {
+  await db('Productos').insert({
+    Producto_nombre,
+    Producto_descripcion,
+    id_Categoria,
+    Producto_precio,
+    Producto_costo,
+    Producto_cantidad,
+    Producto_cantidad_minima,
+    Producto_disponible
+  });
+}
 
-export const updateProduct = async (id_Producto: number, Producto_nombre: string, Producto_descripcion: string, id_Categoria: number, 
-    Producto_precio: number, Producto_costo: number, Producto_cantidad: number, Producto_cantidad_minima: number, Producto_disponible: boolean) => {
-  const pool = await poolPromise;
-  await pool.request()
-    .input('id_Producto', id_Producto)
-    .input('Producto_nombre', Producto_nombre)
-    .input('Producto_descripcion', Producto_descripcion)
-    .input('id_Categoria', id_Categoria)
-    .input('Producto_precio', Producto_precio)
-    .input('Producto_costo', Producto_costo)
-    .input('Producto_cantidad', Producto_cantidad)
-    .input('Producto_cantidad_minima', Producto_cantidad_minima)
-    .input('Producto_disponible', Producto_disponible)
-    .query('UPDATE Products SET Producto_nombre = @Producto_nombre, Producto_descripcion = @Producto_descripcion, id_Categoria = @id_Categoria, Producto_precio = @Producto_precio, Producto_costo = @Producto_costo, Producto_cantidad = @Producto_cantidad, Producto_cantidad_minima = @Producto_cantidad_minima, Producto_disponible = @Producto_disponible WHERE id_Producto = @id_Producto');
-};
+export async function updateProduct(
+  id_Producto: number,
+  Producto_nombre: string,
+  Producto_descripcion: string,
+  id_Categoria: number,
+  Producto_precio: number,
+  Producto_costo: number,
+  Producto_cantidad: number,
+  Producto_cantidad_minima: number,
+  Producto_disponible: boolean
+): Promise<void> {
+  await db('Productos')
+    .where({ id_Producto })
+    .update({
+      Producto_nombre,
+      Producto_descripcion,
+      id_Categoria,
+      Producto_precio,
+      Producto_costo,
+      Producto_cantidad,
+      Producto_cantidad_minima,
+      Producto_disponible
+    });
+}
 
-export const deleteProduct = async (id_Producto: number) => {
-  const pool = await poolPromise;
-  await pool.request()
-    .input('id_Producto', id_Producto)
-    .query('DELETE FROM Products WHERE id_Producto = @id_Producto');
-};
+export async function deleteProduct(id_Producto: number): Promise<void> {
+  await db('Productos').where({ id_Producto }).del();
+}

@@ -1,38 +1,30 @@
-import { poolPromise } from '../utils/db';
+import db from '../utils/db';
+import { Table } from '../types/Table';
 
-export const getTables = async () => {
-    const pool = await poolPromise;
-    const result = await pool.request().query('SELECT * FROM Mesas');
-    return result.recordset;
-};
-
-export const addTable = async (Mesa_nombre: string) => {
-    const pool = await poolPromise;
-    await pool.request()
-        .input('Mesa_nombre', Mesa_nombre)
-        .query('INSERT INTO Mesas (Mesa_nombre) VALUES (@Mesa_nombre)');
+export async function getTables(): Promise<Table[]> {
+  return await db<Table>('Mesas').select('*');
 }
 
-export const getTableById = async (id_Mesa: number) => {
-    const pool = await poolPromise;
-    const result = await pool.request()
-        .input('id_Mesa', id_Mesa)
-        .query('SELECT * FROM Mesas WHERE id_Mesa = @id_Mesa');
-    return result.recordset[0];
-};
-
-export const updateTable = async (id_Mesa: number, Mesa_nombre: string, Mesa_estatus: boolean) => {
-    const pool = await poolPromise;
-    await pool.request()
-        .input('id_Mesa', id_Mesa)
-        .input('Mesa_nombre', Mesa_nombre)
-        .input('Mesa_estatus', Mesa_estatus)
-        .query('UPDATE Mesas SET Mesa_estatus = @Mesa_estatus WHERE id_Mesa = @id_Mesa');
+export async function getTableById(id_Mesa: number): Promise<Table | undefined> {
+  return await db<Table>('Mesas')
+    .where({ id_Mesa })
+    .first();
 }
 
-export const deleteTable = async (id_Mesa: number) => {
-    const pool = await poolPromise;
-    await pool.request()
-        .input('id_Mesa', id_Mesa)
-        .query('DELETE FROM Mesas WHERE id_Mesa = @id_Mesa');
-};
+export async function addTable(Mesa_nombre: string): Promise<void> {
+  await db('Mesas').insert({ Mesa_nombre });
+}
+
+export async function updateTable(
+  id_Mesa: number,
+  Mesa_nombre: string,
+  Mesa_estatus: boolean
+): Promise<void> {
+  await db('Mesas')
+    .where({ id_Mesa })
+    .update({ Mesa_nombre, Mesa_estatus });
+}
+
+export async function deleteTable(id_Mesa: number): Promise<void> {
+  await db('Mesas').where({ id_Mesa }).del();
+}

@@ -20,7 +20,7 @@ export async function createRole(data: {
 
 export async function updateRole(id_Rol: number, data: {
   Rol_nombre: string;
-  Rol_estado: boolean;
+  Rol_estatus: boolean;
 }) {
   const res = await fetch(`/api/roles/${id_Rol}`, {
     method: 'PUT',

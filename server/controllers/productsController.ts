@@ -12,7 +12,16 @@ export const getProducts = async (_: Request, res: Response) => {
 };
 
 export const createProduct = async (req: Request, res: Response) => {
-  const { Producto_nombre, Producto_descripcion, id_Categoria, Producto_precio, Producto_costo, Producto_cantidad, Producto_cantidad_minima, Producto_disponible } = req.body;
+  const { 
+    Producto_nombre, 
+    Producto_descripcion, 
+    id_Categoria, 
+    Producto_precio, 
+    Producto_costo, 
+    Producto_cantidad, 
+    Producto_cantidad_minima, 
+    Producto_disponible 
+  } = req.body;
   const categoria = await getCategoryById(id_Categoria);
 
   if (!Producto_nombre || typeof Producto_nombre !== 'string') {
@@ -52,7 +61,16 @@ export const createProduct = async (req: Request, res: Response) => {
   }
 
   try {
-    await addProduct(Producto_nombre, Producto_descripcion, id_Categoria, Producto_precio, Producto_costo, Producto_cantidad, Producto_cantidad_minima, Producto_disponible);
+    await addProduct(
+      Producto_nombre, 
+      Producto_descripcion, 
+      id_Categoria, 
+      Producto_precio, 
+      Producto_costo, 
+      Producto_cantidad, 
+      Producto_cantidad_minima, 
+      Producto_disponible
+    );
     res.status(201).json({ message: 'Producto creado' });
   } catch (err) {
     res.status(500).json({ message: 'Error creando producto', error: err });
@@ -61,7 +79,16 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const renovateProduct = async (req: Request, res: Response) => {
   const id_Producto = parseInt(req.params.id);
-  const { Producto_nombre, Producto_descripcion, id_Categoria, Producto_precio, Producto_costo, Producto_cantidad, Producto_cantidad_minima, Producto_disponible } = req.body;
+  const { 
+    Producto_nombre, 
+    Producto_descripcion, 
+    id_Categoria, 
+    Producto_precio, 
+    Producto_costo, 
+    Producto_cantidad, 
+    Producto_cantidad_minima, 
+    Producto_disponible 
+  } = req.body;
   const categoria = await getCategoryById(id_Categoria);
 
   if (isNaN(id_Producto)) {
@@ -105,7 +132,17 @@ export const renovateProduct = async (req: Request, res: Response) => {
   }
 
   try {
-    await updateProduct(id_Producto, Producto_nombre, Producto_descripcion, id_Categoria, Producto_precio, Producto_costo, Producto_cantidad, Producto_cantidad_minima, Producto_disponible);
+    await updateProduct(
+      id_Producto, 
+      Producto_nombre, 
+      Producto_descripcion, 
+      id_Categoria, 
+      Producto_precio, 
+      Producto_costo, 
+      Producto_cantidad, 
+      Producto_cantidad_minima, 
+      Producto_disponible
+    );
     res.json({ message: 'Producto actualizado' });
   } catch (err) {
     res.status(500).json({ message: 'Error actualizando producto', error: err });

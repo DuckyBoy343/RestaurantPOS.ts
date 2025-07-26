@@ -1,4 +1,6 @@
-export async function fetchTables() {
+import { Table } from '@/types/table';
+
+export async function fetchTables(): Promise<Table[]> {
   return fetch('/api/tables').then(res => res.json());
 }
 

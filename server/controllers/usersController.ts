@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { getUsers, getUserById, updateUser, deleteUser, addUser } from '../models/users';
 import { getRoleById } from '../models/roles';
+import bcrypt from 'bcrypt';
 
 export const getUsersList = async (_: Request, res: Response) => {
   try {
@@ -31,7 +32,13 @@ export const getUserId = async (req: Request, res: Response) => {
 }
 
 export const createUser = async (req: Request, res: Response) => {
-  const { Usuario_nombre, Usuario_nombre_completo, Usuario_hash_contra, Usuario_rol } = req.body;
+  const { 
+    Usuario_nombre, 
+    Usuario_nombre_completo, 
+    Usuario_hash_contra, 
+    Usuario_rol 
+  } = req.body;
+
   const rol = await getRoleById(Usuario_rol);
 
   if (!Usuario_nombre || typeof Usuario_nombre !== 'string') {
@@ -55,7 +62,15 @@ export const createUser = async (req: Request, res: Response) => {
   }
 
   try {
-    await addUser(Usuario_nombre, Usuario_nombre_completo, Usuario_hash_contra, Usuario_rol);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(Usuario_hash_contra, saltRounds);
+
+    await addUser(
+      Usuario_nombre, 
+      Usuario_nombre_completo, 
+      hashedPassword, 
+      Usuario_rol
+    );
     res.status(201).json({ message: 'Usuario creado' });
   } catch (err) {
     res.status(500).json({ message: 'Error creando usuario', error: err });
@@ -64,7 +79,13 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const renovateUser = async (req: Request, res: Response) => {
   const id_Usuario = parseInt(req.params.id_Usuario);
-  const { Usuario_nombre, Usuario_nombre_completo, Usuario_hash_contra, Usuario_rol, Usuario_estatus } = req.body;
+  const { 
+    Usuario_nombre, 
+    Usuario_nombre_completo, 
+    Usuario_hash_contra, 
+    Usuario_rol, 
+    Usuario_estatus 
+  } = req.body;
   const rol = await getRoleById(Usuario_rol);
 
   if (isNaN(id_Usuario)) {
@@ -92,7 +113,17 @@ export const renovateUser = async (req: Request, res: Response) => {
   }
 
   try {
-    await updateUser(id_Usuario, Usuario_nombre, Usuario_nombre_completo, Usuario_hash_contra, Usuario_rol, Usuario_estatus);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(Usuario_hash_contra, saltRounds);
+
+    await updateUser(
+      id_Usuario, 
+      Usuario_nombre, 
+      Usuario_nombre_completo,
+      hashedPassword, 
+      Usuario_rol, 
+      Usuario_estatus
+    );
     res.json({ message: 'Usario actualizado' });
   } catch (err) {
     res.status(500).json({ message: 'Error actualizando usuario', error: err });

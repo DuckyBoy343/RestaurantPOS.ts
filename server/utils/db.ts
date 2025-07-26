@@ -1,23 +1,17 @@
-import sql from 'mssql';
+import knex from 'knex';
 
-const config: sql.config = {
-  user: process.env.DB_USER!,
-  password: process.env.DB_PASSWORD!,
-  server: process.env.DB_SERVER!,
-  database: process.env.DB_NAME!,
-  options: {
-    encrypt: false,
-    trustServerCertificate: true,
+const db = knex({
+  client: 'mssql',
+  connection: {
+    host: process.env.DB_SERVER!,
+    user: process.env.DB_USER!,
+    password: process.env.DB_PASSWORD!,
+    database: process.env.DB_NAME!,
+    options: {
+      encrypt: false, // Use true if using Azure SQL
+      trustServerCertificate: true, // Use true for local development
+    },
   },
-};
+});
 
-export const poolPromise: Promise<sql.ConnectionPool> = new sql.ConnectionPool(config)
-  .connect()
-  .then((pool: sql.ConnectionPool) => {
-    console.log('Connected to SQL Server');
-    return pool;
-  })
-  .catch((err: Error) => {
-    console.error('Database Connection Failed!', err);
-    throw err;
-  });
+export default db;
