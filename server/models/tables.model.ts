@@ -1,8 +1,20 @@
 import db from '../utils/db';
-import { Table } from '../types/Table';
+import { Table, TableWithOrders } from '../types/Table';
 
-export async function getTables(): Promise<Table[]> {
-  return await db<Table>('Mesas').select('*');
+export async function getTables(): Promise<TableWithOrders[]> {
+  const tables = await db('Mesas as m')
+    .leftJoin('Ordenes as o', function() {
+      this.on('m.id_Mesa', '=', 'o.id_Mesa')
+          .andOn('o.Orden_estado', '=', db.raw("1"));
+    })
+    .select(
+      'm.id_Mesa',
+      'm.Mesa_nombre',
+      'o.id_Orden',
+      'm.Mesa_estatus'
+    );
+    
+  return tables;
 }
 
 export async function getTableById(id_Mesa: number): Promise<Table | undefined> {
@@ -27,4 +39,13 @@ export async function updateTable(
 
 export async function deleteTable(id_Mesa: number): Promise<void> {
   await db('Mesas').where({ id_Mesa }).del();
+}
+
+export async function updateTableStatus(
+  id_Mesa: number,
+  Mesa_estatus: boolean
+): Promise<void> {
+  await db('Mesas')
+    .where({ id_Mesa })
+    .update({ Mesa_estatus });
 }

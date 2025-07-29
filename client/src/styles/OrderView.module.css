@@ -1,0 +1,138 @@
+.container {
+  padding: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.tableCard {
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  width: 20%;
+}
+
+.tableCard:hover {
+  transform: scale(1.03);
+}
+
+.available {
+  background-color: #22c55e; /* green-500 */
+}
+
+.occupied {
+  background-color: #ef4444; /* red-500 */
+}
+
+.category {
+    margin-bottom: 2rem;
+}
+
+.categoryTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb; /* gray-200 */
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.productList {
+    display: grid;
+    /* Creates a responsive grid. Adjust minmax for your preferred size */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.productContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.productControls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 0.75rem; /* 12px */
+}
+
+.quantityButton {
+    border: none;
+    color: white;
+    font-size: 1.75rem; /* 28px */
+    line-height: 1;
+    font-weight: bold;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* Prevents buttons from shrinking */
+    transition: transform 0.1s ease-in-out;
+}
+
+.quantityButton:active {
+    transform: scale(0.95);
+}
+
+.decrementButton {
+    background-color: #f87171; /* A reddish color */
+}
+
+.incrementButton {
+    background-color: #ec4899; /* A pinkish color */
+}
+
+.productDisplay {
+    flex-grow: 1; /* Allows the center part to fill available space */
+    background-color: #3b82f6; /* A nice blue */
+    color: white;
+    padding: 1rem;
+    border-radius: 1rem; /* 16px */
+    text-align: center;
+    font-size: 1.125rem; /* 18px */
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 60px;
+}
+
+.quantityLabel {
+    font-size: 0.875rem; /* 14px */
+    font-weight: 400;
+    margin-top: 0.25rem;
+}
+
+.detailsButton {
+    background-color: #3b82f6; /* Same blue as the display */
+    color: white;
+    border: none;
+    border-radius: 0.5rem; /* 8px */
+    padding: 0.5rem 1.5rem;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.detailsButton:hover {
+    background-color: #2563eb; /* A darker blue on hover */
+}

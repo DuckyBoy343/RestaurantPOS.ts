@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getTables, getTableById, updateTable, deleteTable, addTable } from '../models/tables';
+import { getTables, getTableById, updateTable, deleteTable, addTable, updateTableStatus } from '../models/tables.model';
 
 export const getTablesList = async (_: Request, res: Response) => {
     try {
@@ -80,5 +80,25 @@ export const eliminateTable = async (req: Request, res: Response) => {
         res.json({ message: 'Mesa eliminada' });
     } catch (err) {
         res.status(500).json({ message: 'Error eliminando mesa', error: err });
+    }
+};
+
+export const changeTableStatus = async (req: Request, res: Response) => {
+    const id_Mesa = parseInt(req.params.id_Mesa);
+    const { Mesa_estatus } = req.body;
+
+    if (isNaN(id_Mesa)) {
+        return res.status(400).json({ message: 'ID de mesa invalido' });
+    }
+
+    if (typeof Mesa_estatus !== 'boolean') {
+        return res.status(400).json({ message: 'Estatus de mesa debe ser un booleano' });
+    }
+
+    try {
+        await updateTableStatus(id_Mesa, Mesa_estatus);
+        res.json({ message: 'Estatus de mesa actualizado' });
+    } catch (err) {
+        res.status(500).json({ message: 'Error actualizando estatus de mesa', error: err });
     }
 };

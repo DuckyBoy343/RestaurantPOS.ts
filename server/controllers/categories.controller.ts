@@ -5,7 +5,7 @@ import {
   updateCategory,
   deleteCategory,
   getCategoryById,
-} from "../models/categories";
+} from "../models/categories.model";
 
 export const getCategoriesList = async (_: Request, res: Response) => {
   try {
@@ -34,7 +34,7 @@ export const createCategory = async (req: Request, res: Response) => {
 };
 
 export const renovateCategory = async (req: Request, res: Response) => {
-  const id_Categoria = parseInt(req.params.id);
+  const id_Categoria = parseInt(req.params.id_Categoria);
   const { Categoria_nombre, Categoria_estatus } = req.body;
 
   if (isNaN(id_Categoria)) {
@@ -60,7 +60,7 @@ export const renovateCategory = async (req: Request, res: Response) => {
 };
 
 export const eliminateCategory = async (req: Request, res: Response) => {
-  const id_Categoria = parseInt(req.params.id);
+  const id_Categoria = parseInt(req.params.id_Categoria);
 
   if (isNaN(id_Categoria)) {
     return res.status(400).json({ message: "ID de categoria invalido" });
@@ -75,7 +75,7 @@ export const eliminateCategory = async (req: Request, res: Response) => {
 };
 
 export const getCategoryId = async (req: Request, res: Response) => {
-  const id_Categoria = parseInt(req.params.id);
+  const id_Categoria = parseInt(req.params.id_Categoria);
 
   if (isNaN(id_Categoria)) {
     return res.status(400).json({ message: "ID de categoria invalido" });

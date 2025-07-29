@@ -3,3 +3,7 @@ export interface Table {
     Mesa_nombre: string;
     Mesa_estatus: boolean;
 }
+
+export interface TableWithOrders extends Table {
+    id_Orden: number | null;
+}

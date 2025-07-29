@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { getAllProducts, addProduct, updateProduct, deleteProduct, getProductById } from '../models/products';
-import { getCategoryById } from '../models/categories';
+import { getAllProducts, addProduct, updateProduct, deleteProduct, getProductById } from '../models/products.model';
+import { getCategoryById } from '../models/categories.model';
 
 export const getProducts = async (_: Request, res: Response) => {
   try {
@@ -78,7 +78,7 @@ export const createProduct = async (req: Request, res: Response) => {
 };
 
 export const renovateProduct = async (req: Request, res: Response) => {
-  const id_Producto = parseInt(req.params.id);
+  const id_Producto = parseInt(req.params.id_Producto);
   const { 
     Producto_nombre, 
     Producto_descripcion, 
@@ -150,7 +150,7 @@ export const renovateProduct = async (req: Request, res: Response) => {
 };
 
 export const eliminateProduct = async (req: Request, res: Response) => {
-  const id_Producto = parseInt(req.params.id);
+  const id_Producto = parseInt(req.params.id_Producto);
 
   if (isNaN(id_Producto)) {
     return res.status(400).json({ message: 'ID de producto inválido' });
@@ -165,7 +165,7 @@ export const eliminateProduct = async (req: Request, res: Response) => {
 };
 
 export const getProductId = async (req: Request, res: Response) => {
-  const id_Producto = parseInt(req.params.id);
+  const id_Producto = parseInt(req.params.id_Producto);
 
   if (isNaN(id_Producto)) {
     return res.status(400).json({ message: 'ID de producto inválido' });

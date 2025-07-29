@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { getUsers, getUserById, updateUser, deleteUser, addUser } from '../models/users';
-import { getRoleById } from '../models/roles';
+import { getUsers, getUserById, updateUser, deleteUser, addUser } from '../models/users.model';
+import { getRoleById } from '../models/roles.model';
 import bcrypt from 'bcrypt';
 
 export const getUsersList = async (_: Request, res: Response) => {
