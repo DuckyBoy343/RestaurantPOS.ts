@@ -1,8 +1,8 @@
 export interface User {
-    id_Usuario: number;
-    Usuario_nombre: string;
-    Usuario_nombre_completo: string;
-    Usuario_hash_contra: string;
-    Usuario_rol: number;
-    Usuario_estatus: boolean;
+    id_usuario: number;
+    usuario_nombre: string;
+    usuario_nombre_completo: string;
+    usuario_hash_contra: string;
+    id_rol: number;
+    usuario_estatus: boolean;
 }

@@ -1,17 +1,24 @@
 export interface Order {
-  id_Orden: number;
-  id_Mesa: number;
-  id_Usuario: number;
-  Orden_fecha_creacion: string;
-  Orden_estado: string;
-  Orden_total_provisional: number;
+  id_orden: number;
+  id_mesa: number;
+  id_usuario: number;
+  fecha_creacion: string;
+  estado: string;
+  total_provisional: number;
 }
 
 export interface OrderDetail {
-  id_DetalleOrden: number;
-  id_Orden: number;
-  id_Producto: number;
-  DetalleOrden_cantidad: number;
-  DetalleOrden_precio_unitario: number;
-  DetalleOrden_notas?: string;
+  id_detalle_orden: number;
+  id_orden: number;
+  id_producto: number;
+  cantidad: number;
+  precio_unitario: number;
+  notas?: string;
+}
+
+export interface OrderDetailUpdate {
+  id_producto: number;
+  cantidad: number;
+  precio_unitario: number;
+  notas?: string | null;
 }

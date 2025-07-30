@@ -19,14 +19,14 @@ export const getCategoriesList = async (_: Request, res: Response) => {
 };
 
 export const createCategory = async (req: Request, res: Response) => {
-  const { Categoria_nombre } = req.body;
+  const { categoria_nombre } = req.body;
 
-  if (!Categoria_nombre || typeof Categoria_nombre !== "string") {
+  if (!categoria_nombre || typeof categoria_nombre !== "string") {
     return res.status(400).json({ message: "Nombre de categoria es requerido y debe ser un string" });
   }
 
   try {
-    await addCategory(Categoria_nombre);
+    await addCategory(categoria_nombre);
     res.status(201).json({ message: "Categoria creada" });
   } catch (err) {
     res.status(500).json({ message: "Error creando categoria", error: err });
@@ -34,23 +34,23 @@ export const createCategory = async (req: Request, res: Response) => {
 };
 
 export const renovateCategory = async (req: Request, res: Response) => {
-  const id_Categoria = parseInt(req.params.id_Categoria);
-  const { Categoria_nombre, Categoria_estatus } = req.body;
+  const id_categoria = parseInt(req.params.id_categoria);
+  const { categoria_nombre, categoria_estatus } = req.body;
 
-  if (isNaN(id_Categoria)) {
+  if (isNaN(id_categoria)) {
     return res.status(400).json({ message: "ID de categoria invalido" });
   }
 
-  if (!Categoria_nombre || typeof Categoria_nombre !== "string") {
+  if (!categoria_nombre || typeof categoria_nombre !== "string") {
     return res.status(400).json({ message: "Nombre de categoria es requerido y debe ser un string" });
   }
 
-  if (!Categoria_estatus || typeof Categoria_estatus !== "boolean") {
+  if (!categoria_estatus || typeof categoria_estatus !== "boolean") {
     return res.status(400).json({ message: "Estatus de categoria es requerido y debe ser un booleano" });
   }
 
   try {
-    await updateCategory(id_Categoria, Categoria_nombre, Categoria_estatus);
+    await updateCategory(id_categoria, categoria_nombre, categoria_estatus);
     res.json({ message: "Categoria actualizada" });
   } catch (err) {
     res
@@ -60,14 +60,14 @@ export const renovateCategory = async (req: Request, res: Response) => {
 };
 
 export const eliminateCategory = async (req: Request, res: Response) => {
-  const id_Categoria = parseInt(req.params.id_Categoria);
+  const id_categoria = parseInt(req.params.id_categoria);
 
-  if (isNaN(id_Categoria)) {
+  if (isNaN(id_categoria)) {
     return res.status(400).json({ message: "ID de categoria invalido" });
   }
 
   try {
-    await deleteCategory(id_Categoria);
+    await deleteCategory(id_categoria);
     res.json({ message: "Categoria eliminada" });
   } catch (err) {
     res.status(500).json({ message: "Error eliminando categoria", error: err });
@@ -75,14 +75,14 @@ export const eliminateCategory = async (req: Request, res: Response) => {
 };
 
 export const getCategoryId = async (req: Request, res: Response) => {
-  const id_Categoria = parseInt(req.params.id_Categoria);
+  const id_categoria = parseInt(req.params.id_categoria);
 
-  if (isNaN(id_Categoria)) {
+  if (isNaN(id_categoria)) {
     return res.status(400).json({ message: "ID de categoria invalido" });
   }
 
   try {
-    const category = await getCategoryById(id_Categoria);
+    const category = await getCategoryById(id_categoria);
     if (category) {
       res.json(category);
     } else {

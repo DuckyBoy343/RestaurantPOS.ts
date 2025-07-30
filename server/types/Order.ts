@@ -1,8 +1,8 @@
 export interface Order {
-    id_Orden: number;
-    id_Mesa: number;
-    id_Usuario: number;
-    Orden_fecha_creacion: Date;
-    Orden_estado: boolean;
-    Orden_total_provisional: number;
+    id_orden: number;
+    id_mesa: number;
+    id_usuario: number;
+    fecha_creacion: Date;
+    estado: boolean;
+    total_provisional: number;
 }

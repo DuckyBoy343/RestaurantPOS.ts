@@ -17,7 +17,7 @@ export default function ProductItem({ product, quantity, onAdd, onRemove }: Prod
         <button onClick={onRemove} className={`${styles.quantityButton} ${styles.decrementButton}`}>-</button>
 
         <div className={styles.productDisplay}>
-          <span className={styles.productName}>{product.Producto_nombre}</span>
+          <span className={styles.productName}>{product.producto_nombre}</span>
           {quantity > 0 && <span className={styles.quantityLabel}>({quantity})</span>}
         </div>
 

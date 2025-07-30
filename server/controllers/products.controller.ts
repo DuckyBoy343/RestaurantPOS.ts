@@ -13,26 +13,26 @@ export const getProducts = async (_: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
   const { 
-    Producto_nombre, 
-    Producto_descripcion, 
-    id_Categoria, 
-    Producto_precio, 
-    Producto_costo, 
-    Producto_cantidad, 
-    Producto_cantidad_minima, 
-    Producto_disponible 
+    producto_nombre, 
+    producto_descripcion, 
+    id_categoria, 
+    producto_precio, 
+    producto_costo, 
+    producto_cantidad, 
+    producto_cantidad_minima, 
+    producto_disponible 
   } = req.body;
-  const categoria = await getCategoryById(id_Categoria);
+  const categoria = await getCategoryById(id_categoria);
 
-  if (!Producto_nombre || typeof Producto_nombre !== 'string') {
+  if (!producto_nombre || typeof producto_nombre !== 'string') {
     return res.status(400).json({ message: 'Nombre de producto es requerido y debe ser un string' });
   }
 
-  if (!Producto_descripcion || typeof Producto_descripcion !== 'string') {
+  if (!producto_descripcion || typeof producto_descripcion !== 'string') {
     return res.status(400).json({ message: 'Descripción de producto es requerida y debe ser un string' });
   }
 
-  if (isNaN(id_Categoria)) {
+  if (isNaN(id_categoria)) {
     return res.status(400).json({ message: 'ID de categoría inválido' });
   }
 
@@ -40,36 +40,36 @@ export const createProduct = async (req: Request, res: Response) => {
     return res.status(404).json({ message: 'Categoría no encontrada' });
   }
 
-  if (isNaN(Producto_precio) || Producto_precio < 0) {
+  if (isNaN(producto_precio) || producto_precio < 0) {
     return res.status(400).json({ message: 'Precio de producto es requerido y debe ser un número positivo' });
   }
 
-  if (isNaN(Producto_costo) || Producto_costo < 0) {
+  if (isNaN(producto_costo) || producto_costo < 0) {
     return res.status(400).json({ message: 'Costo de producto es requerido y debe ser un número positivo' });
   }
 
-  if (isNaN(Producto_cantidad) || Producto_cantidad < 0) {
+  if (isNaN(producto_cantidad) || producto_cantidad < 0) {
     return res.status(400).json({ message: 'Cantidad de producto es requerida y debe ser un número positivo' });
   }
 
-  if (isNaN(Producto_cantidad_minima) || Producto_cantidad_minima < 0) {
+  if (isNaN(producto_cantidad_minima) || producto_cantidad_minima < 0) {
     return res.status(400).json({ message: 'Cantidad mínima de producto es requerida y debe ser un número positivo' });
   }
 
-  if (typeof Producto_disponible !== 'boolean') {
+  if (typeof producto_disponible !== 'boolean') {
     return res.status(400).json({ message: 'Disponibilidad de producto es requerida y debe ser un booleano' });
   }
 
   try {
     await addProduct(
-      Producto_nombre, 
-      Producto_descripcion, 
-      id_Categoria, 
-      Producto_precio, 
-      Producto_costo, 
-      Producto_cantidad, 
-      Producto_cantidad_minima, 
-      Producto_disponible
+      producto_nombre, 
+      producto_descripcion, 
+      id_categoria, 
+      producto_precio, 
+      producto_costo, 
+      producto_cantidad, 
+      producto_cantidad_minima, 
+      producto_disponible
     );
     res.status(201).json({ message: 'Producto creado' });
   } catch (err) {
@@ -78,32 +78,32 @@ export const createProduct = async (req: Request, res: Response) => {
 };
 
 export const renovateProduct = async (req: Request, res: Response) => {
-  const id_Producto = parseInt(req.params.id_Producto);
+  const id_producto = parseInt(req.params.id_producto);
   const { 
-    Producto_nombre, 
-    Producto_descripcion, 
-    id_Categoria, 
-    Producto_precio, 
-    Producto_costo, 
-    Producto_cantidad, 
-    Producto_cantidad_minima, 
-    Producto_disponible 
+    producto_nombre, 
+    producto_descripcion, 
+    id_categoria, 
+    producto_precio, 
+    producto_costo, 
+    producto_cantidad, 
+    producto_cantidad_minima, 
+    producto_disponible 
   } = req.body;
-  const categoria = await getCategoryById(id_Categoria);
+  const categoria = await getCategoryById(id_categoria);
 
-  if (isNaN(id_Producto)) {
+  if (isNaN(id_producto)) {
     return res.status(400).json({ message: 'ID de producto inválido' });
   }
 
-  if (!Producto_nombre || typeof Producto_nombre !== 'string') {
+  if (!producto_nombre || typeof producto_nombre !== 'string') {
     return res.status(400).json({ message: 'Nombre de producto es requerido y debe ser un string' });
   }
 
-  if (!Producto_descripcion || typeof Producto_descripcion !== 'string') {
+  if (!producto_descripcion || typeof producto_descripcion !== 'string') {
     return res.status(400).json({ message: 'Descripción de producto es requerida y debe ser un string' });
   }
 
-  if (isNaN(id_Categoria)) {
+  if (isNaN(id_categoria)) {
     return res.status(400).json({ message: 'ID de categoría inválido' });
   }
 
@@ -111,37 +111,37 @@ export const renovateProduct = async (req: Request, res: Response) => {
     return res.status(404).json({ message: 'Categoría no encontrada' });
   }
 
-  if (isNaN(Producto_precio) || Producto_precio < 0) {
+  if (isNaN(producto_precio) || producto_precio < 0) {
     return res.status(400).json({ message: 'Precio de producto es requerido y debe ser un número positivo' });
   }
 
-  if (isNaN(Producto_costo) || Producto_costo < 0) {
+  if (isNaN(producto_costo) || producto_costo < 0) {
     return res.status(400).json({ message: 'Costo de producto es requerido y debe ser un número positivo' });
   }
 
-  if (isNaN(Producto_cantidad) || Producto_cantidad < 0) {
+  if (isNaN(producto_cantidad) || producto_cantidad < 0) {
     return res.status(400).json({ message: 'Cantidad de producto es requerida y debe ser un número positivo' });
   }
 
-  if (isNaN(Producto_cantidad_minima) || Producto_cantidad_minima < 0) {
+  if (isNaN(producto_cantidad_minima) || producto_cantidad_minima < 0) {
     return res.status(400).json({ message: 'Cantidad mínima de producto es requerida y debe ser un número positivo' });
   }
 
-  if (typeof Producto_disponible !== 'boolean') {
+  if (typeof producto_disponible !== 'boolean') {
     return res.status(400).json({ message: 'Disponibilidad de producto es requerida y debe ser un booleano' });
   }
 
   try {
     await updateProduct(
-      id_Producto, 
-      Producto_nombre, 
-      Producto_descripcion, 
-      id_Categoria, 
-      Producto_precio, 
-      Producto_costo, 
-      Producto_cantidad, 
-      Producto_cantidad_minima, 
-      Producto_disponible
+      id_producto, 
+      producto_nombre, 
+      producto_descripcion, 
+      id_categoria, 
+      producto_precio, 
+      producto_costo, 
+      producto_cantidad, 
+      producto_cantidad_minima, 
+      producto_disponible
     );
     res.json({ message: 'Producto actualizado' });
   } catch (err) {
@@ -150,14 +150,14 @@ export const renovateProduct = async (req: Request, res: Response) => {
 };
 
 export const eliminateProduct = async (req: Request, res: Response) => {
-  const id_Producto = parseInt(req.params.id_Producto);
+  const id_producto = parseInt(req.params.id_producto);
 
-  if (isNaN(id_Producto)) {
+  if (isNaN(id_producto)) {
     return res.status(400).json({ message: 'ID de producto inválido' });
   }
 
   try {
-    await deleteProduct(id_Producto);
+    await deleteProduct(id_producto);
     res.json({ message: 'Producto eliminado' });
   } catch (err) {
     res.status(500).json({ message: 'Error eliminando producto', error: err });
@@ -165,14 +165,14 @@ export const eliminateProduct = async (req: Request, res: Response) => {
 };
 
 export const getProductId = async (req: Request, res: Response) => {
-  const id_Producto = parseInt(req.params.id_Producto);
+  const id_producto = parseInt(req.params.id_producto);
 
-  if (isNaN(id_Producto)) {
+  if (isNaN(id_producto)) {
     return res.status(400).json({ message: 'ID de producto inválido' });
   }
 
   try {
-    const product = await getProductById(id_Producto);
+    const product = await getProductById(id_producto);
     if (product) {
       res.json(product);
     } else {

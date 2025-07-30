@@ -23,14 +23,12 @@ export default function TablesPage() {
         getTables();
     }, []);
 
-    console.log("Tables:", tables);
-
     const handleTableClick = (table: TableWithOrders) => {
-        if (table.Mesa_estatus) {
+        if (table.mesa_estatus) {
             setSelectedTable(table);
             setIsModalOpen(true);
         } else {
-            router.push(`/orders/${table.id_Orden}`);
+            router.push(`/orders/${table.id_orden}`);
         }
     };
 
@@ -40,12 +38,12 @@ export default function TablesPage() {
         try {
             // Cambiar usuario al de la sesión actual, proximamente se obtendrá del contexto o estado global
             const data = {
-                id_Usuario: 1,
-                id_Mesa: selectedTable.id_Mesa,
+                id_usuario: 1,
+                id_mesa: selectedTable.id_mesa,
             };
             const newOrder = await createOrder(data);
-            await changeTableStatus(selectedTable.id_Mesa, false);
-            router.push(`/orders/${newOrder.id_Orden}`);
+            await changeTableStatus(selectedTable.id_mesa, false);
+            router.push(`/orders/${newOrder.id_orden}`);
         } catch (error) {
             console.error("Error creating order:", error);
             alert("No se pudo crear el pedido.");
@@ -60,16 +58,16 @@ export default function TablesPage() {
             <h1 className={styles.title}>Mesas</h1>
             <div className={styles.grid}>
                 {tables.map((table) => {
-                    const statusText = table.Mesa_estatus ? 'Disponible' : 'Ocupada';
-                    const statusClass = table.Mesa_estatus ? styles.available : styles.occupied;
+                    const statusText = table.mesa_estatus ? 'Disponible' : 'Ocupada';
+                    const statusClass = table.mesa_estatus ? styles.available : styles.occupied;
 
                     return (
                         <div
-                            key={table.id_Mesa}
+                            key={table.id_mesa}
                             className={`${styles.tableCard} ${statusClass}`}
                             onClick={() => handleTableClick(table)}
                         >
-                            Mesa {table.Mesa_nombre} - {statusText}
+                            Mesa {table.mesa_nombre} - {statusText}
                         </div>
                     );
                 })}
@@ -80,7 +78,7 @@ export default function TablesPage() {
                 onClose={() => setIsModalOpen(false)}
                 onConfirm={handleConfirmOrder}
             >
-                <p>¿Desea abrir una nueva orden para la Mesa {selectedTable?.Mesa_nombre}?</p>
+                <p>¿Desea abrir una nueva orden para la Mesa {selectedTable?.mesa_nombre}?</p>
             </Modal>
         </div>
     );

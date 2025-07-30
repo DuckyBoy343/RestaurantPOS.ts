@@ -1,8 +1,8 @@
 export interface OrderDetail {
-    id_DetalleOrden: number;
-    id_Orden: number;
-    id_Producto: number;
-    DetalleOrden_cantidad: number;
-    DetalleOrden_precio_unitario: number;
-    DetalleOrden_notas: string | null;
+    id_detalle_orden: number;
+    id_orden: number;
+    id_producto: number;
+    cantidad: number;
+    precio_unitario: number;
+    notas: string | null;
 }

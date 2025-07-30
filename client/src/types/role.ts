@@ -1,5 +1,5 @@
 export interface Role {
-    id_Rol: number;
-    Rol_nombre: string;
-    Rol_estatus: boolean;
+    id_rol: number;
+    rol_nombre: string;
+    rol_estatus: boolean;
 }

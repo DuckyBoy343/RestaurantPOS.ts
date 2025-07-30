@@ -11,14 +11,14 @@ export const getTablesList = async (_: Request, res: Response) => {
 };
 
 export const getTableId = async (req: Request, res: Response) => {
-    const id_Mesa = parseInt(req.params.id_Mesa);
+    const id_mesa = parseInt(req.params.id_mesa);
 
-    if (isNaN(id_Mesa)) {
+    if (isNaN(id_mesa)) {
         return res.status(400).json({ message: 'ID de mesa invalido' });
     }
 
     try {
-        const table = await getTableById(id_Mesa);
+        const table = await getTableById(id_mesa);
         if (table) {
             res.json(table);
         } else {
@@ -30,14 +30,14 @@ export const getTableId = async (req: Request, res: Response) => {
 };
 
 export const createTable = async (req: Request, res: Response) => {
-    const { Mesa_nombre } = req.body;
+    const { mesa_nombre } = req.body;
 
-    if (!Mesa_nombre || typeof Mesa_nombre !== 'string') {
+    if (!mesa_nombre || typeof mesa_nombre !== 'string') {
         return res.status(400).json({ message: 'Nombre de mesa es requerido y debe ser un string' });
     }
 
     try {
-        await addTable(Mesa_nombre);
+        await addTable(mesa_nombre);
         res.status(201).json({ message: 'Mesa creada' });
     } catch (err) {
         res.status(500).json({ message: 'Error creando mesa', error: err });
@@ -45,23 +45,23 @@ export const createTable = async (req: Request, res: Response) => {
 };
 
 export const renovateTable = async (req: Request, res: Response) => {
-    const id_Mesa = parseInt(req.params.id_Mesa);
-    const { Mesa_nombre, Mesa_estatus } = req.body;
+    const id_mesa = parseInt(req.params.id_mesa);
+    const { mesa_nombre, mesa_estatus } = req.body;
 
-    if (isNaN(id_Mesa)) {
+    if (isNaN(id_mesa)) {
         return res.status(400).json({ message: 'ID de mesa invalido' });
     }
 
-    if (!Mesa_nombre || typeof Mesa_nombre !== 'string') {
+    if (!mesa_nombre || typeof mesa_nombre !== 'string') {
         return res.status(400).json({ message: 'Nombre de mesa es requerido y debe ser un string' });
     }
 
-    if (!Mesa_estatus || typeof Mesa_estatus !== 'boolean') {
+    if (!mesa_estatus || typeof mesa_estatus !== 'boolean') {
         return res.status(400).json({ message: 'Estatus de mesa es requerido y debe ser un booleano' });
     }
 
     try {
-        await updateTable(id_Mesa, Mesa_nombre, Mesa_estatus);
+        await updateTable(id_mesa, mesa_nombre, mesa_estatus);
         res.json({ message: 'Mesa actualizada' });
     } catch (err) {
         res.status(500).json({ message: 'Error actualizando mesa', error: err });
@@ -69,14 +69,14 @@ export const renovateTable = async (req: Request, res: Response) => {
 };
 
 export const eliminateTable = async (req: Request, res: Response) => {
-    const id_Mesa = parseInt(req.params.id_Mesa);
+    const id_mesa = parseInt(req.params.id_mesa);
 
-    if (isNaN(id_Mesa)) {
+    if (isNaN(id_mesa)) {
         return res.status(400).json({ message: 'ID de mesa invalido' });
     }
 
     try {
-        await deleteTable(id_Mesa);
+        await deleteTable(id_mesa);
         res.json({ message: 'Mesa eliminada' });
     } catch (err) {
         res.status(500).json({ message: 'Error eliminando mesa', error: err });
@@ -84,19 +84,19 @@ export const eliminateTable = async (req: Request, res: Response) => {
 };
 
 export const changeTableStatus = async (req: Request, res: Response) => {
-    const id_Mesa = parseInt(req.params.id_Mesa);
-    const { Mesa_estatus } = req.body;
+    const id_mesa = parseInt(req.params.id_mesa);
+    const { mesa_estatus } = req.body;
 
-    if (isNaN(id_Mesa)) {
+    if (isNaN(id_mesa)) {
         return res.status(400).json({ message: 'ID de mesa invalido' });
     }
 
-    if (typeof Mesa_estatus !== 'boolean') {
+    if (typeof mesa_estatus !== 'boolean') {
         return res.status(400).json({ message: 'Estatus de mesa debe ser un booleano' });
     }
 
     try {
-        await updateTableStatus(id_Mesa, Mesa_estatus);
+        await updateTableStatus(id_mesa, mesa_estatus);
         res.json({ message: 'Estatus de mesa actualizado' });
     } catch (err) {
         res.status(500).json({ message: 'Error actualizando estatus de mesa', error: err });

@@ -2,48 +2,48 @@ import db from '../utils/db';
 import { User } from '../types/User';
 
 export async function getUsers(): Promise<User[]> {
-  return await db<User>('Usuarios').select('*');
+  return await db<User>('usuarios').select('*');
 }
 
-export async function getUserById(id_Usuario: number): Promise<User | undefined> {
-  return await db<User>('Usuarios')
-    .where({ id_Usuario })
+export async function getUserById(id_usuario: number): Promise<User | undefined> {
+  return await db<User>('usuarios')
+    .where({ id_usuario })
     .first();
 }
 
 export async function addUser(
-  Usuario_nombre: string,
-  Usuario_nombre_completo: string,
-  Usuario_hash_contra: string,
-  Usuario_rol: number
+  usuario_nombre: string,
+  usuario_nombre_completo: string,
+  usuario_hash_contra: string,
+  id_rol: number
 ): Promise<void> {
-  await db('Usuarios').insert({
-    Usuario_nombre,
-    Usuario_nombre_completo,
-    Usuario_hash_contra,
-    Usuario_rol
+  await db('usuarios').insert({
+    usuario_nombre,
+    usuario_nombre_completo,
+    usuario_hash_contra,
+    id_rol
   });
 }
 
 export async function updateUser(
-  id_Usuario: number,
-  Usuario_nombre: string,
-  Usuario_nombre_completo: string,
-  Usuario_hash_contra: string,
-  Usuario_rol: number,
-  Usuario_estatus: boolean
+  id_usuario: number,
+  usuario_nombre: string,
+  usuario_nombre_completo: string,
+  usuario_hash_contra: string,
+  id_rol: number,
+  usuario_estatus: boolean
 ): Promise<void> {
-  await db('Usuarios')
-    .where({ id_Usuario })
+  await db('usuarios')
+    .where({ id_usuario })
     .update({
-      Usuario_nombre,
-      Usuario_nombre_completo,
-      Usuario_hash_contra,
-      Usuario_rol,
-      Usuario_estatus
+      usuario_nombre,
+      usuario_nombre_completo,
+      usuario_hash_contra,
+      id_rol,
+      usuario_estatus
     });
 }
 
-export async function deleteUser(id_Usuario: number): Promise<void> {
-  await db('Usuarios').where({ id_Usuario }).del();
+export async function deleteUser(id_usuario: number): Promise<void> {
+  await db('usuarios').where({ id_usuario }).del();
 }

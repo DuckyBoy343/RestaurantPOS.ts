@@ -13,14 +13,14 @@ export const getUsersList = async (_: Request, res: Response) => {
 };
 
 export const getUserId = async (req: Request, res: Response) => {
-  const id_Usuario = parseInt(req.params.id_Usuario);
+  const id_usuario = parseInt(req.params.id_usuario);
 
-  if (isNaN(id_Usuario)) {
+  if (isNaN(id_usuario)) {
     return res.status(400).json({ message: 'ID de usuario inválido' });
   }
 
   try {
-    const user = await getUserById(id_Usuario);
+    const user = await getUserById(id_usuario);
     if (user) {
       res.json(user);
     } else {
@@ -33,27 +33,27 @@ export const getUserId = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   const { 
-    Usuario_nombre, 
-    Usuario_nombre_completo, 
-    Usuario_hash_contra, 
-    Usuario_rol 
+    usuario_nombre, 
+    usuario_nombre_completo, 
+    usuario_hash_contra, 
+    id_rol 
   } = req.body;
 
-  const rol = await getRoleById(Usuario_rol);
+  const rol = await getRoleById(id_rol);
 
-  if (!Usuario_nombre || typeof Usuario_nombre !== 'string') {
+  if (!usuario_nombre || typeof usuario_nombre !== 'string') {
     return res.status(400).json({ message: 'Nombre de usuario es requerido y debe ser un string' });
   }
 
-  if (!Usuario_nombre_completo || typeof Usuario_nombre_completo !== 'string') {
+  if (!usuario_nombre_completo || typeof usuario_nombre_completo !== 'string') {
     return res.status(400).json({ message: 'Nombre completo de usuario es requerido y debe ser un string' });
   }
 
-  if (!Usuario_hash_contra || typeof Usuario_hash_contra !== 'string') {
+  if (!usuario_hash_contra || typeof usuario_hash_contra !== 'string') {
     return res.status(400).json({ message: 'Contraseña de usuario es requerida y debe ser un string' });
   }
 
-  if (isNaN(Usuario_rol) || !rol) {
+  if (isNaN(id_rol) || !rol) {
     return res.status(400).json({ message: 'ID de rol inválido o rol no encontrado' });
   }
 
@@ -63,13 +63,13 @@ export const createUser = async (req: Request, res: Response) => {
 
   try {
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(Usuario_hash_contra, saltRounds);
+    const hashedPassword = await bcrypt.hash(usuario_hash_contra, saltRounds);
 
     await addUser(
-      Usuario_nombre, 
-      Usuario_nombre_completo, 
+      usuario_nombre, 
+      usuario_nombre_completo, 
       hashedPassword, 
-      Usuario_rol
+      id_rol
     );
     res.status(201).json({ message: 'Usuario creado' });
   } catch (err) {
@@ -78,33 +78,33 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const renovateUser = async (req: Request, res: Response) => {
-  const id_Usuario = parseInt(req.params.id_Usuario);
+  const id_usuario = parseInt(req.params.id_usuario);
   const { 
-    Usuario_nombre, 
-    Usuario_nombre_completo, 
-    Usuario_hash_contra, 
-    Usuario_rol, 
-    Usuario_estatus 
+    usuario_nombre, 
+    usuario_nombre_completo, 
+    usuario_hash_contra, 
+    id_rol, 
+    usuario_estatus 
   } = req.body;
-  const rol = await getRoleById(Usuario_rol);
+  const rol = await getRoleById(id_rol);
 
-  if (isNaN(id_Usuario)) {
+  if (isNaN(id_usuario)) {
     return res.status(400).json({ message: 'ID de usuario inválido' });
   }
 
-  if (!Usuario_nombre || typeof Usuario_nombre !== 'string') {
+  if (!usuario_nombre || typeof usuario_nombre !== 'string') {
     return res.status(400).json({ message: 'Nombre de usuario es requerido y debe ser un string' });
   }
 
-  if (!Usuario_nombre_completo || typeof Usuario_nombre_completo !== 'string') {
+  if (!usuario_nombre_completo || typeof usuario_nombre_completo !== 'string') {
     return res.status(400).json({ message: 'Nombre completo de usuario es requerido y debe ser un string' });
   }
 
-  if (!Usuario_hash_contra || typeof Usuario_hash_contra !== 'string') {
+  if (!usuario_hash_contra || typeof usuario_hash_contra !== 'string') {
     return res.status(400).json({ message: 'Contraseña de usuario es requerida y debe ser un string' });
   }
 
-  if (isNaN(Usuario_rol) || !rol) {
+  if (isNaN(id_rol) || !rol) {
     return res.status(400).json({ message: 'ID de rol inválido o rol no encontrado' });
   }
 
@@ -114,15 +114,15 @@ export const renovateUser = async (req: Request, res: Response) => {
 
   try {
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(Usuario_hash_contra, saltRounds);
+    const hashedPassword = await bcrypt.hash(usuario_hash_contra, saltRounds);
 
     await updateUser(
-      id_Usuario, 
-      Usuario_nombre, 
-      Usuario_nombre_completo,
+      id_usuario, 
+      usuario_nombre, 
+      usuario_nombre_completo,
       hashedPassword, 
-      Usuario_rol, 
-      Usuario_estatus
+      id_rol, 
+      usuario_estatus
     );
     res.json({ message: 'Usario actualizado' });
   } catch (err) {
@@ -131,14 +131,14 @@ export const renovateUser = async (req: Request, res: Response) => {
 };
 
 export const eliminateUser = async (req: Request, res: Response) => {
-  const id_Usuario = parseInt(req.params.id_Usuario);
+  const id_usuario = parseInt(req.params.id_usuario);
 
-  if (isNaN(id_Usuario)) {
+  if (isNaN(id_usuario)) {
     return res.status(400).json({ message: 'ID de usuario inválido' });
   }
 
   try {
-    await deleteUser(id_Usuario);
+    await deleteUser(id_usuario);
     res.json({ message: 'User deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Error eliminando usuario', error: err });

@@ -4,28 +4,26 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Product } from '@/types/product';
 import { Category } from '@/types/category';
-import { Order, OrderDetail } from '@/types/order'; // Import both types
+import { Order, OrderDetail } from '@/types/order';
 import { fetchProducts } from '@/services/products';
 import { fetchCategories } from '@/services/categories';
-import { fetchOrderById, saveOrderDetails } from '@/services/orders'; // Renamed for clarity
+import { fetchOrderById, saveOrderDetails, fetchOrderDetails, updateOrderDetails, closeOrder } from '@/services/orders';
 import styles from '@/styles/OrderView.module.css';
 import ProductItem from '@/components/ProductItem';
+import OrderSummary from '@/components/OrderSummary';
+import CheckoutModal from '@/components/CheckoutModal';
 
 export default function OrderPage() {
     const params = useParams();
-    const id_Orden = Number(params.id_Orden);
-
-    // --- State Management ---
-    // 1. State for static order info (ID, table ID, etc.)
+    const id_orden = Number(params.id_orden);
     const [orderInfo, setOrderInfo] = useState<Order | null>(null);
-    // 2. State for the interactive list of items (the Map)
     const [orderItems, setOrderItems] = useState<Map<number, number>>(new Map());
-
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isExistingOrder, setIsExistingOrder] = useState(false);
+    const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
-    // --- Handlers for Modifying the Order ---
     const handleAddToOrder = (productId: number) => {
         setOrderItems(currentOrder => {
             const newOrder = new Map(currentOrder);
@@ -51,26 +49,24 @@ export default function OrderPage() {
     };
 
     const handleSaveOrder = async () => {
-        // Define the type for a single payload item
         type OrderDetailPayload = {
-            id_Producto: number;
-            DetalleOrden_cantidad: number;
-            DetalleOrden_precio_unitario: number;
+            id_producto: number;
+            cantidad: number;
+            precio_unitario: number;
         };
 
         const orderDetailsPayload = Array.from(orderItems.entries())
-            .map(([productId, quantity]): OrderDetailPayload | null => { // Note the explicit return type here
-                const product = products.find(p => p.id_Producto === productId);
+            .map(([productId, quantity]): OrderDetailPayload | null => {
+                const product = products.find(p => p.id_producto === productId);
                 if (product) {
                     return {
-                        id_Producto: productId,
-                        DetalleOrden_cantidad: quantity,
-                        DetalleOrden_precio_unitario: product.Producto_precio,
+                        id_producto: productId,
+                        cantidad: quantity,
+                        precio_unitario: product.producto_precio,
                     };
                 }
                 return null;
             })
-            // This type guard filter tells TypeScript that any nulls are removed
             .filter((item): item is OrderDetailPayload => item !== null);
 
         if (orderDetailsPayload.length === 0) {
@@ -79,37 +75,56 @@ export default function OrderPage() {
         }
 
         try {
-            // Now the payload type matches the function's expected parameter type
-            await saveOrderDetails(id_Orden, orderDetailsPayload);
-            alert("Pedido confirmado y guardado!");
+            if (isExistingOrder) {
+                await updateOrderDetails(id_orden, orderDetailsPayload);
+                alert("Pedido actualizado exitosamente.");
+            } else {
+                await saveOrderDetails(id_orden, orderDetailsPayload);
+                alert("Pedido confirmado y guardado!");
+                setIsExistingOrder(true);
+            }
         } catch (error) {
             console.error('Error creating order detail:', error);
             alert("Error al guardar el pedido.");
         }
     }
 
-    // --- Data Fetching ---
+    const handleConfirmCheckout = async (paymentMethod: string) => {
+        if (!orderInfo) return;
+
+        try {
+            // Call your backend service to close the order
+            await closeOrder(orderInfo.id_orden, paymentMethod);
+            alert("¡Venta finalizada exitosamente!");
+            // Redirect back to the main tables view after success
+            window.location.href = '/floor'; // Or use Next.js router: router.push('/floor');
+        } catch (error) {
+            console.error("Failed to close order:", error);
+            alert("Hubo un error al finalizar la venta.");
+        } finally {
+            setIsCheckoutModalOpen(false); // Close the modal
+        }
+    };
+
     useEffect(() => {
-        if (id_Orden) {
+        if (id_orden) {
             async function fetchPageData() {
                 try {
-                    // Fetch all data in parallel
-                    const [orderData, productsData, categoriesData] = await Promise.all([
-                        fetchOrderById(id_Orden),
+                    const [orderData, productsData, categoriesData, orderDetailsData] = await Promise.all([
+                        fetchOrderById(id_orden),
                         fetchProducts(),
                         fetchCategories(),
+                        fetchOrderDetails(id_orden)
                     ]);
 
-                    // Set the static info and the product lists
                     setOrderInfo(orderData);
                     setProducts(productsData);
                     setCategories(categoriesData);
 
-                    // IMPORTANT: Initialize the order items map with data from the database
-                    // This assumes your fetchOrderById returns an order with a 'details' array
-                    if (orderData && orderData.details) {
+                    if (orderDetailsData && orderDetailsData.length > 0) {
+                        setIsExistingOrder(true);
                         const initialItems: Map<number, number> = new Map(
-                            orderData.details.map((item: OrderDetail) => [item.id_Producto, item.DetalleOrden_cantidad])
+                            orderDetailsData.map((item: OrderDetail) => [item.id_producto, Number(item.cantidad)])
                         );
                         setOrderItems(initialItems);
                     }
@@ -121,15 +136,8 @@ export default function OrderPage() {
             }
             fetchPageData();
         }
-    }, [id_Orden]);
+    }, [id_orden]);
 
-    // --- Calculations for Rendering ---
-    const orderTotal = Array.from(orderItems.entries()).reduce((total, [productId, quantity]) => {
-        const product = products.find(p => p.id_Producto === productId);
-        return total + (product ? product.Producto_precio * quantity : 0);
-    }, 0);
-
-    // --- Render Logic ---
     if (loading) {
         return <div className={styles.centeredMessage}>Cargando Orden...</div>;
     }
@@ -138,52 +146,37 @@ export default function OrderPage() {
         return <div className={styles.centeredMessage}>Pedido no encontrado.</div>;
     }
 
+    const orderTotal = Array.from(orderItems.entries()).reduce((total, [productId, quantity]) => {
+        const product = products.find(p => p.id_producto === productId);
+        return total + (product ? product.producto_precio * quantity : 0);
+    }, 0);
+
     return (
         <div className={styles.pageContainer}>
             <div className="p-4">
-                <h1 className="text-2xl font-bold">Orden para Mesa {orderInfo.id_Mesa}</h1>
+                <h1 className="text-2xl font-bold">Orden para Mesa {orderInfo.id_mesa}</h1>
 
                 {orderItems.size > 0 && (
-                    <div className={styles.orderSummary}>
-                        <h3 className={styles.summaryTitle}>Resumen del Pedido</h3>
-                        <ul>
-                            {[...orderItems.entries()].map(([productId, quantity]) => {
-                                const product = products.find(p => p.id_Producto === productId);
-                                if (!product) return null;
-
-                                return (
-                                    <li key={productId} className={styles.summaryItem}>
-                                        <span>{product.Producto_nombre}</span>
-                                        <span>x {quantity}</span>
-                                        <span>${(product.Producto_precio * quantity).toFixed(2)}</span>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                        <div className={styles.summaryTotal}>
-                            <span>Total:</span>
-                            <span>${orderTotal.toFixed(2)}</span>
-                        </div>
-                    </div>
+                    <OrderSummary orderItems={orderItems} products={products} />
                 )}
 
                 <div className={styles.container}>
                     <h2 className={styles.title}>Productos</h2>
                     {categories.map((category) => (
-                        <div key={category.id_Categoria} className={styles.category}>
-                            <h3 className={styles.categoryTitle}>{category.Categoria_nombre}</h3>
+                        <div key={category.id_categoria} className={styles.category}>
+                            <h3 className={styles.categoryTitle}>{category.categoria_nombre}</h3>
                             <div className={styles.productList}>
                                 {products
-                                    .filter(product => product.id_Categoria === category.id_Categoria)
+                                    .filter(product => product.id_categoria === category.id_categoria)
                                     .map(product => {
-                                        const quantity = orderItems.get(product.id_Producto) || 0;
+                                        const quantity = orderItems.get(product.id_producto) || 0;
                                         return (
                                             <ProductItem
-                                                key={product.id_Producto}
+                                                key={product.id_producto}
                                                 product={product}
                                                 quantity={quantity}
-                                                onAdd={() => handleAddToOrder(product.id_Producto)}
-                                                onRemove={() => handleRemoveFromOrder(product.id_Producto)}
+                                                onAdd={() => handleAddToOrder(product.id_producto)}
+                                                onRemove={() => handleRemoveFromOrder(product.id_producto)}
                                             />
                                         );
                                     })
@@ -195,9 +188,18 @@ export default function OrderPage() {
             </div>
             <div className={styles.footer}>
                 <button onClick={handleSaveOrder} className={styles.submitButton} disabled={orderItems.size === 0}>
-                    Confirmar Pedido
+                    {orderItems.size > 1 ? 'Actualizar Pedido' : 'Confirmar Pedido'}
+                </button>
+                <button onClick={() => setIsCheckoutModalOpen(true)} className={styles.submitButton}>
+                    Finalizar y Cobrar
                 </button>
             </div>
+            <CheckoutModal
+                isOpen={isCheckoutModalOpen}
+                onClose={() => setIsCheckoutModalOpen(false)}
+                onConfirm={handleConfirmCheckout}
+                total={orderTotal}
+            />
         </div>
     );
 }

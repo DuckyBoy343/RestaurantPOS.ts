@@ -2,29 +2,29 @@ import db from '../utils/db';
 import { Category } from '../types/Category';
 
 export async function getCategories(): Promise<Category[]> {
-  return await db<Category>('Categorias').select('*');
+  return await db<Category>('categorias').select('*');
 }
 
-export async function getCategoryById(id_Categoria: number): Promise<Category | undefined> {
-  return await db<Category>('Categorias')
-    .where({ id_Categoria })
+export async function getCategoryById(id_categoria: number): Promise<Category | undefined> {
+  return await db<Category>('categorias')
+    .where({ id_categoria })
     .first();
 }
 
-export async function addCategory(Categoria_nombre: string): Promise<void> {
-  await db('Categorias').insert({ Categoria_nombre });
+export async function addCategory(categoria_nombre: string): Promise<void> {
+  await db('categorias').insert({ categoria_nombre });
 }
 
 export async function updateCategory(
-  id_Categoria: number,
-  Categoria_nombre: string,
-  Categoria_estatus: boolean
+  id_categoria: number,
+  categoria_nombre: string,
+  categoria_estatus: boolean
 ): Promise<void> {
-  await db('Categorias')
-    .where({ id_Categoria })
-    .update({ Categoria_nombre, Categoria_estatus });
+  await db('categorias')
+    .where({ id_categoria })
+    .update({ categoria_nombre, categoria_estatus });
 }
 
-export async function deleteCategory(id_Categoria: number): Promise<void> {
-  await db('Categorias').where({ id_Categoria }).del();
+export async function deleteCategory(id_categoria: number): Promise<void> {
+  await db('categorias').where({ id_categoria }).del();
 }

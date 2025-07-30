@@ -2,15 +2,15 @@ export async function fetchUsers() {
   return fetch('/api/users').then(res => res.json());
 }
 
-export async function fetchUserById(id_Usuario: number) {
-  return fetch(`/api/users/${id_Usuario}`).then(res => res.json());
+export async function fetchUserById(id_usuario: number) {
+  return fetch(`/api/users/${id_usuario}`).then(res => res.json());
 }
 
 export async function createUser(data: {
-  Usuario_nombre: string;
-  Usuario_nombre_completo: string;
-  Usuario_hash_contra: string;
-  Usuario_rol: number;
+  usuario_nombre: string;
+  usuario_nombre_completo: string;
+  usuario_hash_contra: string;
+  id_rol: number;
 }) {
   const res = await fetch('/api/users', {
     method: 'POST',
@@ -21,14 +21,14 @@ export async function createUser(data: {
   return res.json();
 }
 
-export async function updateUser(id_Usuario: number, data: {
-  Usuario_nombre: string;
-  Usuario_nombre_completo: string;
-  Usuario_hash_contra: string;
-  Usuario_rol: number;
-  Usuario_estatus: boolean;
+export async function updateUser(id_usuario: number, data: {
+  usuario_nombre: string;
+  usuario_nombre_completo: string;
+  usuario_hash_contra: string;
+  id_rol: number;
+  usuario_estatus: boolean;
 }) {
-  const res = await fetch(`/api/users/${id_Usuario}`, {
+  const res = await fetch(`/api/users/${id_usuario}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -37,8 +37,8 @@ export async function updateUser(id_Usuario: number, data: {
   return res.json();
 }
 
-export async function deleteUser(id_Usuario: number) {
-  const res = await fetch(`/api/users/${id_Usuario}`, {
+export async function deleteUser(id_usuario: number) {
+  const res = await fetch(`/api/users/${id_usuario}`, {
     method: 'DELETE',
   });
 

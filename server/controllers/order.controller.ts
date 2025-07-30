@@ -21,10 +21,10 @@ export const getOrdersList = async (_: Request, res: Response) => {
 };
 
 export const getOrderId = async (req: Request, res: Response) => {
-    const id_Orden = parseInt(req.params.id_Orden);
+    const id_orden = parseInt(req.params.id_orden);
     try {
-        const order = await getOrderById(id_Orden);
-        if (isNaN(id_Orden)) {
+        const order = await getOrderById(id_orden);
+        if (isNaN(id_orden)) {
             return res.status(400).json({ message: "ID de pedido invalido" });
         }
         if (!order) {
@@ -37,11 +37,11 @@ export const getOrderId = async (req: Request, res: Response) => {
 };
 
 export const createOrder = async (req: Request, res: Response) => {
-    const { id_Mesa, id_Usuario } = req.body;
+    const { id_mesa, id_usuario } = req.body;
 
-    const mesa = await getTableById(id_Mesa);
+    const mesa = await getTableById(id_mesa);
 
-    if (isNaN(id_Mesa)) {
+    if (isNaN(id_mesa)) {
         return res.status(400).json({ message: "ID de mesa invalido" });
     }
 
@@ -50,7 +50,7 @@ export const createOrder = async (req: Request, res: Response) => {
     }
 
     try {
-        const newOrder = await addOrder(id_Mesa, id_Usuario);
+        const newOrder = await addOrder(id_mesa, id_usuario);
         res.status(201).json({ newOrder, message: "Pedido creado exitosamente" });
     } catch (err) {
         res.status(500).json({ message: "Error creando pedido", error: err });
@@ -58,15 +58,15 @@ export const createOrder = async (req: Request, res: Response) => {
 };
 
 export const renovateOrder = async (req: Request, res: Response) => {
-    const id_Orden = parseInt(req.params.id_Orden);
-    const { id_Mesa, id_Usuario, Orden_estado, Orden_total_provisional } = req.body;
-    const mesa = await getTableById(id_Mesa);
+    const id_orden = parseInt(req.params.id_orden);
+    const { id_mesa, id_usuario, estado, total_provisional } = req.body;
+    const mesa = await getTableById(id_mesa);
 
-    if (isNaN(id_Orden)) {
+    if (isNaN(id_orden)) {
         return res.status(400).json({ message: "ID de pedido invalido" });
     }
 
-    if (isNaN(id_Mesa)) {
+    if (isNaN(id_mesa)) {
         return res.status(400).json({ message: "ID de mesa invalido" });
     }
 
@@ -74,12 +74,12 @@ export const renovateOrder = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Mesa no encontrada" });
     }
 
-    if (isNaN(id_Usuario)) {
+    if (isNaN(id_usuario)) {
         return res.status(400).json({ message: "ID de usuario invalido" });
     }
 
     try {
-        await updateOrder(id_Orden, id_Mesa, id_Usuario, Orden_estado, Orden_total_provisional);
+        await updateOrder(id_orden, id_mesa, id_usuario, estado, total_provisional);
         res.status(200).json({ message: "Pedido actualizado" });
     } catch (err) {
         res.status(500).json({ message: "Error actualizando pedido", error: err });
@@ -87,13 +87,13 @@ export const renovateOrder = async (req: Request, res: Response) => {
 }
 
 export const eliminateOrder = async (req: Request, res: Response) => {
-    const id_Orden = parseInt(req.params.id_Orden);
-    if (isNaN(id_Orden)) {
+    const id_orden = parseInt(req.params.id_orden);
+    if (isNaN(id_orden)) {
         return res.status(400).json({ message: "ID de pedido invalido" });
     }
 
     try {
-        await deleteOrder(id_Orden);
+        await deleteOrder(id_orden);
         res.json({ message: "Pedido eliminado" });
     } catch (err) {
         res.status(500).json({ message: "Error eliminando pedido", error: err });
@@ -102,19 +102,35 @@ export const eliminateOrder = async (req: Request, res: Response) => {
 
 export const moveOrder = async (req: Request, res: Response) => {
     try {
-        const id_Orden = parseInt(req.params.id_Orden, 10);
-        const { id_Mesa: new_id_Mesa } = req.body;
+        const id_orden = parseInt(req.params.id_orden, 10);
+        const { id_mesa: new_id_mesa } = req.body;
 
-        if (isNaN(id_Orden) || isNaN(new_id_Mesa)) {
+        if (isNaN(id_orden) || isNaN(new_id_mesa)) {
             return res.status(400).json({ message: 'IDs de pedido y mesa inválidos.' });
         }
 
-        await OrderService.moveOrderToTable(id_Orden, new_id_Mesa);
+        await OrderService.moveOrderToTable(id_orden, new_id_mesa);
 
         res.status(200).json({ message: 'Pedido movido a la nueva mesa exitosamente.' });
     } catch (err: any) {
         const statusCode = err.status || 500;
         const message = err.message || 'Error al mover el pedido.';
         res.status(statusCode).json({ message });
+    }
+};
+
+export const closeOrder = async (req: Request, res: Response) => {
+    const id_orden = parseInt(req.params.id_orden);
+    const { venta_metodo_pago } = req.body;
+
+    if (isNaN(id_orden)) {
+        return res.status(400).json({ message: "ID de pedido invalido" });
+    }
+
+    try {
+        await OrderService.closeOrder(id_orden, venta_metodo_pago);
+        res.status(200).json({ message: "Pedido cerrado exitosamente" });
+    } catch (err) {
+        res.status(500).json({ message: "Error cerrando pedido", error: err });
     }
 };

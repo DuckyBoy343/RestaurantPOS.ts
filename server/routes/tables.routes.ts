@@ -5,9 +5,9 @@ const router = Router();
 
 router.get('/', getTablesList);
 router.post('/', createTable);
-router.put('/:id_Mesa', renovateTable);
-router.delete('/:id_Mesa', eliminateTable);
-router.get('/:id_Mesa', getTableId);
-router.patch('/:id_Mesa/status', changeTableStatus);
+router.put('/:id_mesa', renovateTable);
+router.delete('/:id_mesa', eliminateTable);
+router.get('/:id_mesa', getTableId);
+router.patch('/:id_mesa/status', changeTableStatus);
 
 export default router;

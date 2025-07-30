@@ -2,19 +2,19 @@ export async function fetchProducts() {
   return fetch('/api/products').then(res => res.json());
 }
 
-export async function fetchProductById(id_Producto: number) {
-  return fetch(`/api/products/${id_Producto}`).then(res => res.json());
+export async function fetchProductById(id_producto: number) {
+  return fetch(`/api/products/${id_producto}`).then(res => res.json());
 }
 
 export async function createProduct(data: {
-  Producto_nombre: string;
-  Producto_descripcion: string;
-  id_Categoria: number;
-  Producto_precio: number;
-  Producto_costo: number;
-  Producto_cantidad: number;
-  Producto_cantidad_minima: number;
-  Producto_disponible: boolean;
+  producto_nombre: string;
+  producto_descripcion: string;
+  id_categoria: number;
+  producto_precio: number;
+  producto_costo: number;
+  producto_cantidad: number;
+  producto_cantidad_minima: number;
+  producto_disponible: boolean;
 }) {
   const res = await fetch('/api/products', {
     method: 'POST',
@@ -25,17 +25,17 @@ export async function createProduct(data: {
   return res.json();
 }
 
-export async function updateProduct(id_Producto: number, data: {
-  Producto_nombre: string;
-  Producto_descripcion: string;
-  id_Categoria: number;
-  Producto_precio: number;
-  Producto_costo: number;
-  Producto_cantidad: number;
-  Producto_cantidad_minima: number;
-  Producto_disponible: boolean;
+export async function updateProduct(id_producto: number, data: {
+  producto_nombre: string;
+  producto_descripcion: string;
+  id_categoria: number;
+  producto_precio: number;
+  producto_costo: number;
+  producto_cantidad: number;
+  producto_cantidad_minima: number;
+  producto_disponible: boolean;
 }) {
-  const res = await fetch(`/api/products/${id_Producto}`, {
+  const res = await fetch(`/api/products/${id_producto}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -44,8 +44,8 @@ export async function updateProduct(id_Producto: number, data: {
   return res.json();
 }
 
-export async function deleteProduct(id_Producto: number) {
-  const res = await fetch(`/api/products/${id_Producto}`, {
+export async function deleteProduct(id_producto: number) {
+  const res = await fetch(`/api/products/${id_producto}`, {
     method: 'DELETE',
   });
 

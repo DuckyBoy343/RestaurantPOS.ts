@@ -2,43 +2,43 @@ import db from '../utils/db';
 import { Order } from '../types/Order';
 
 export async function getOrders(): Promise<Order[]> {
-    return await db<Order>('Ordenes').select('*');
+    return await db<Order>('ordenes').select('*');
 }
 
-export async function getOrderById(id_Orden: number): Promise<Order | undefined> {
-    return await db<Order>('Ordenes')
-        .where({ id_Orden })
+export async function getOrderById(id_orden: number): Promise<Order | undefined> {
+    return await db<Order>('ordenes')
+        .where({ id_orden })
         .first();
 }
 
 export async function addOrder(
-    id_Mesa: number,
-    id_Usuario: number,
+    id_mesa: number,
+    id_usuario: number,
 ): Promise<Order> {
-    const [newOrder] = await db('Ordenes').insert({
-        id_Mesa,
-        id_Usuario,
+    const [newOrder] = await db('ordenes').insert({
+        id_mesa,
+        id_usuario,
     }).returning('*');
     return newOrder;
 }
 
 export async function updateOrder(
-    id_Orden: number,
-    id_Mesa: number,
-    id_Usuario: number,
-    Orden_estado: boolean,
-    Orden_total_provisional: number,
+    id_orden: number,
+    id_mesa: number,
+    id_usuario: number,
+    estado: boolean,
+    total_provisional: number,
 ): Promise<void> {
-    await db('Ordenes')
-        .where({ id_Orden })
+    await db('ordenes')
+        .where({ id_orden })
         .update({
-            id_Mesa,
-            id_Usuario,
-            Orden_estado,
-            Orden_total_provisional
+            id_mesa,
+            id_usuario,
+            estado,
+            total_provisional
         });
 }
 
-export async function deleteOrder(id_Orden: number): Promise<void> {
-    await db('Ordenes').where({ id_Orden }).del();
+export async function deleteOrder(id_orden: number): Promise<void> {
+    await db('ordenes').where({ id_orden }).del();
 }

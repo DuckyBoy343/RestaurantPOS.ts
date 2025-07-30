@@ -4,12 +4,12 @@ export async function fetchTables(): Promise<TableWithOrders[]> {
   return fetch('/api/tables').then(res => res.json());
 }
 
-export async function fetchTableById(id_Mesa: number): Promise<Table> {
-  return fetch(`/api/tables/${id_Mesa}`).then(res => res.json());
+export async function fetchTableById(id_mesa: number): Promise<Table> {
+  return fetch(`/api/tables/${id_mesa}`).then(res => res.json());
 }
 
 export async function createTable(data: {
-  Mesa_nombre: number;
+  mesa_nombre: number;
 }) {
   const res = await fetch('/api/tables', {
     method: 'POST',
@@ -20,11 +20,11 @@ export async function createTable(data: {
   return res.json();
 }
 
-export async function updateTable(id_Mesa: number, data: {
-  Mesa_nombre: number;
-  Mesa_estatus: boolean;
+export async function updateTable(id_mesa: number, data: {
+  mesa_nombre: number;
+  mesa_estatus: boolean;
 }) {
-  const res = await fetch(`/api/tables/${id_Mesa}`, {
+  const res = await fetch(`/api/tables/${id_mesa}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -33,19 +33,19 @@ export async function updateTable(id_Mesa: number, data: {
   return res.json();
 }
 
-export async function deleteTable(id_Mesa: number) {
-  const res = await fetch(`/api/tables/${id_Mesa}`, {
+export async function deleteTable(id_mesa: number) {
+  const res = await fetch(`/api/tables/${id_mesa}`, {
     method: 'DELETE',
   });
 
   return res.json();
 }
 
-export async function changeTableStatus(id_Mesa: number, Mesa_estatus: boolean) {
-  const res = await fetch(`/api/tables/${id_Mesa}/status`, {
+export async function changeTableStatus(id_mesa: number, mesa_estatus: boolean) {
+  const res = await fetch(`/api/tables/${id_mesa}/status`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ Mesa_estatus }),
+    body: JSON.stringify({ mesa_estatus }),
   });
 
   return res.json();
