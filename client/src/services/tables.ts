@@ -1,11 +1,12 @@
+import { api } from '@/lib/api';
 import { Table, TableWithOrders } from '@/types/table';
 
 export async function fetchTables(): Promise<TableWithOrders[]> {
-  return fetch('/api/tables').then(res => res.json());
+  return api.get('/tables/');
 }
 
 export async function fetchTableById(id_mesa: number): Promise<Table> {
-  return fetch(`/api/tables/${id_mesa}`).then(res => res.json());
+  return api.get(`/tables/${id_mesa}`);
 }
 
 export async function createTable(data: {
@@ -42,11 +43,5 @@ export async function deleteTable(id_mesa: number) {
 }
 
 export async function changeTableStatus(id_mesa: number, mesa_estatus: boolean) {
-  const res = await fetch(`/api/tables/${id_mesa}/status`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mesa_estatus }),
-  });
-
-  return res.json();
+  return api.patch(`/tables/${id_mesa}/status`, { mesa_estatus });
 }

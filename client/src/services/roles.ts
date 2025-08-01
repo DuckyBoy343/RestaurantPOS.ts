@@ -1,5 +1,8 @@
-export async function fetchRoles() {
-  return fetch('/api/roles').then(res => res.json());
+import { api } from '@/lib/api';
+import { Role } from '@/types/role';
+
+export async function fetchRoles(): Promise<Role[]> {
+  return api.get('/roles/');
 }
 
 export async function fetchRoleById(id_rol: number) {

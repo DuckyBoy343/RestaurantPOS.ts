@@ -1,5 +1,8 @@
-export async function fetchCategories() { 
-  return fetch('/api/categories').then(res => res.json());
+import { api } from '@/lib/api';
+import { Category } from '@/types/category';
+
+export async function fetchCategories(): Promise<Category[]> { 
+  return api.get('/categories/');
 }
 
 export async function fetchCategoryById(id_categoria: number) {

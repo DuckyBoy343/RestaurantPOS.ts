@@ -1,5 +1,8 @@
-export async function fetchProducts() {
-  return fetch('/api/products').then(res => res.json());
+import { api } from '@/lib/api';
+import { Product } from '@/types/product';
+
+export async function fetchProducts(): Promise<Product[]> {
+  return api.get('/products/');
 }
 
 export async function fetchProductById(id_producto: number) {

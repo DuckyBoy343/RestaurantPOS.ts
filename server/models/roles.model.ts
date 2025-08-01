@@ -2,7 +2,7 @@ import db from '../utils/db';
 import { Role } from '../types/Role';
 
 export async function getRoles(): Promise<Role[]> {
-  return await db<Role>('Rol').select('*');
+  return await db<Role>('roles').select('*');
 }
 
 export async function getRoleById(id_rol: number): Promise<Role | undefined> {
