@@ -5,8 +5,8 @@ const router = Router();
 
 router.get('/', getProducts);
 router.post('/', createProduct);
-router.put('/:id_producto', renovateProduct);
-router.delete('/:id_producto', eliminateProduct);
+router.patch('/:id_producto', renovateProduct);
+router.post('/delete-many', eliminateProduct);
 router.get('/:id_producto', getProductId);
 
 export default router;

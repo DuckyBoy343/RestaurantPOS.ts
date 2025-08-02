@@ -11,20 +11,21 @@ export async function getCategoryById(id_categoria: number): Promise<Category | 
     .first();
 }
 
-export async function addCategory(categoria_nombre: string): Promise<void> {
-  await db('categorias').insert({ categoria_nombre });
+export async function addCategory(categoria_nombre: string, categoria_estatus:boolean): Promise<void> {
+  const [newCategory] = await db('categorias').insert({ categoria_nombre, categoria_estatus }).returning('*');
+  return newCategory;
 }
 
 export async function updateCategory(
   id_categoria: number,
-  categoria_nombre: string,
-  categoria_estatus: boolean
+  dataToUpdate: {categoria_nombre?: string, categoria_estatus?: boolean}
 ): Promise<void> {
-  await db('categorias')
+  const [updatedCategory] = await db('categorias')
     .where({ id_categoria })
-    .update({ categoria_nombre, categoria_estatus });
+    .update(dataToUpdate).returning('*');
+  return updatedCategory;
 }
 
-export async function deleteCategory(id_categoria: number): Promise<void> {
-  await db('categorias').where({ id_categoria }).del();
+export async function deleteCategory(ids: number[]): Promise<void> {
+  await db('categorias').whereIn('id_categoria',ids).del();
 }

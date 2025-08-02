@@ -5,8 +5,8 @@ const router = Router();
 
 router.get('/', getUsersList);
 router.post('/', createUser);
-router.put('/:id_usuario', renovateUser);
-router.delete('/:id_usuario', eliminateUser);
+router.patch('/:id_usuario', renovateUser);
+router.post('/delete-many', eliminateUser);
 router.get('/:id_usuario', getUserId);
 
 export default router;

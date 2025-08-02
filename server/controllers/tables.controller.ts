@@ -30,15 +30,19 @@ export const getTableId = async (req: Request, res: Response) => {
 };
 
 export const createTable = async (req: Request, res: Response) => {
-    const { mesa_nombre } = req.body;
+    const { mesa_nombre, mesa_estatus } = req.body;
 
     if (!mesa_nombre || typeof mesa_nombre !== 'string') {
         return res.status(400).json({ message: 'Nombre de mesa es requerido y debe ser un string' });
     }
 
+    if (mesa_estatus !== undefined && typeof mesa_estatus !== 'boolean') {
+        return res.status(400).json({ message: 'Estatus de la mesa debe ser un booleano' });
+    }
+
     try {
-        await addTable(mesa_nombre);
-        res.status(201).json({ message: 'Mesa creada' });
+        const newTable = await addTable(mesa_nombre, mesa_estatus);
+        res.status(201).json(newTable);
     } catch (err) {
         res.status(500).json({ message: 'Error creando mesa', error: err });
     }
@@ -52,32 +56,43 @@ export const renovateTable = async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'ID de mesa invalido' });
     }
 
-    if (!mesa_nombre || typeof mesa_nombre !== 'string') {
-        return res.status(400).json({ message: 'Nombre de mesa es requerido y debe ser un string' });
+    const fieldsToUpdate: { mesa_nombre?: string; mesa_estatus?: boolean } = {};
+
+    if (mesa_nombre !== undefined) {
+        if (typeof mesa_nombre !== 'string' || mesa_nombre.trim() === '') {
+            return res.status(400).json({ message: 'Nombre de la mesa debe de ser un string' });
+        }
+        fieldsToUpdate.mesa_nombre = mesa_nombre;
     }
 
-    if (!mesa_estatus || typeof mesa_estatus !== 'boolean') {
-        return res.status(400).json({ message: 'Estatus de mesa es requerido y debe ser un booleano' });
+    if (mesa_estatus !== undefined) {
+        if (typeof mesa_estatus !== 'boolean') {
+            return res.status(400).json({ message: 'Estatus de rol debe ser un booleano' });
+        }
+        fieldsToUpdate.mesa_estatus = mesa_estatus;
     }
 
+    if (Object.keys(fieldsToUpdate).length === 0) {
+        return res.status(400).json({ message: 'No fields to update provided.' });
+    }
     try {
-        await updateTable(id_mesa, mesa_nombre, mesa_estatus);
-        res.json({ message: 'Mesa actualizada' });
+        const updatedTable = await updateTable(id_mesa, fieldsToUpdate);
+        res.json(updatedTable);
     } catch (err) {
         res.status(500).json({ message: 'Error actualizando mesa', error: err });
     }
 };
 
 export const eliminateTable = async (req: Request, res: Response) => {
-    const id_mesa = parseInt(req.params.id_mesa);
+    const { ids } = req.body;
 
-    if (isNaN(id_mesa)) {
-        return res.status(400).json({ message: 'ID de mesa invalido' });
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Un arreglo de mesas es necesario." });
     }
 
     try {
-        await deleteTable(id_mesa);
-        res.json({ message: 'Mesa eliminada' });
+        await deleteTable(ids);
+        res.status(204).send();
     } catch (err) {
         res.status(500).json({ message: 'Error eliminando mesa', error: err });
     }

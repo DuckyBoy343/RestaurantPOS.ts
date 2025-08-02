@@ -5,4 +5,5 @@ export interface User {
     usuario_hash_contra: string;
     id_rol: number;
     usuario_estatus: boolean;
+    rol_nombre?: string;
 }

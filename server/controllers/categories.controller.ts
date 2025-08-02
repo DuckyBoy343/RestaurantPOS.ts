@@ -19,15 +19,19 @@ export const getCategoriesList = async (_: Request, res: Response) => {
 };
 
 export const createCategory = async (req: Request, res: Response) => {
-  const { categoria_nombre } = req.body;
+  const { categoria_nombre, categoria_estatus } = req.body;
 
   if (!categoria_nombre || typeof categoria_nombre !== "string") {
     return res.status(400).json({ message: "Nombre de categoria es requerido y debe ser un string" });
   }
 
+  if (categoria_estatus !== undefined && typeof categoria_estatus !== 'boolean') {
+    return res.status(400).json({ message: 'Estatus de la categoria debe ser un booleano' });
+  }
+
   try {
-    await addCategory(categoria_nombre);
-    res.status(201).json({ message: "Categoria creada" });
+    const newCategory = await addCategory(categoria_nombre, categoria_estatus);
+    res.status(201).json(newCategory);
   } catch (err) {
     res.status(500).json({ message: "Error creando categoria", error: err });
   }
@@ -41,17 +45,29 @@ export const renovateCategory = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "ID de categoria invalido" });
   }
 
-  if (!categoria_nombre || typeof categoria_nombre !== "string") {
-    return res.status(400).json({ message: "Nombre de categoria es requerido y debe ser un string" });
+  const fieldsToUpdate: { categoria_nombre?: string; categoria_estatus?: boolean } = {};
+
+  if (categoria_nombre !== undefined) {
+    if (typeof categoria_nombre !== 'string' || categoria_nombre.trim() === '') {
+      return res.status(400).json({ message: 'Nombre de categoria debe de ser un string' });
+    }
+    fieldsToUpdate.categoria_nombre = categoria_nombre;
   }
 
-  if (!categoria_estatus || typeof categoria_estatus !== "boolean") {
-    return res.status(400).json({ message: "Estatus de categoria es requerido y debe ser un booleano" });
+  if (categoria_estatus !== undefined) {
+    if (typeof categoria_estatus !== 'boolean') {
+      return res.status(400).json({ message: 'Estatus de la categoria debe ser un booleano' });
+    }
+    fieldsToUpdate.categoria_estatus = categoria_estatus;
+  }
+
+  if (Object.keys(fieldsToUpdate).length === 0) {
+    return res.status(400).json({ message: 'No fields to update provided.' });
   }
 
   try {
-    await updateCategory(id_categoria, categoria_nombre, categoria_estatus);
-    res.json({ message: "Categoria actualizada" });
+    const updatedCategory = await updateCategory(id_categoria, fieldsToUpdate);
+    res.status(201).json(updatedCategory);
   } catch (err) {
     res
       .status(500)
@@ -60,15 +76,15 @@ export const renovateCategory = async (req: Request, res: Response) => {
 };
 
 export const eliminateCategory = async (req: Request, res: Response) => {
-  const id_categoria = parseInt(req.params.id_categoria);
+  const ids = req.body;
 
-  if (isNaN(id_categoria)) {
-    return res.status(400).json({ message: "ID de categoria invalido" });
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: "Un arreglo de categorias es necesario." });
   }
 
   try {
-    await deleteCategory(id_categoria);
-    res.json({ message: "Categoria eliminada" });
+    await deleteCategory(ids);
+    res.status(204).send();
   } catch (err) {
     res.status(500).json({ message: "Error eliminando categoria", error: err });
   }

@@ -8,4 +8,5 @@ export interface Product {
     producto_cantidad: number;
     producto_cantidad_minima: number;
     producto_disponible: boolean;
+    categoria_nombre ?: string;
 }

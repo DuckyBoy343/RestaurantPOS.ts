@@ -15,10 +15,14 @@ interface MainGridProps {
     title: string;
     columns: Column[];
     items: Item[];
-    itemNoun: string; // e.g., "Employee", "Usuario"
-    onAddItem: (newItem: Omit<Item, 'id'>) => void;
+    itemNoun: string;
+    onAddItem: () => void;
     onEditItem: (item: Item) => void;
     onDeleteItems: (selectedIds: (string | number)[]) => void;
+    totalItems: number;
+    itemsPerPage: number;
+    currentPage: number;
+    onPageChange: (newPage: number) => void;
 }
 
 const renderCellContent = (value: unknown) => {
@@ -36,7 +40,7 @@ const renderCellContent = (value: unknown) => {
     return String(value ?? '');
 };
 
-export default function MainGrid({ title, columns, items, itemNoun }: MainGridProps) {
+export default function MainGrid({ title, columns, items, itemNoun, onAddItem, onEditItem, onDeleteItems, totalItems, itemsPerPage, currentPage, onPageChange }: MainGridProps) {
     const [selectedItems, setSelectedItems] = useState<(string | number)[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -58,7 +62,20 @@ export default function MainGrid({ title, columns, items, itemNoun }: MainGridPr
         }
     };
 
+    const handleConfirmDelete = async () => {
+        try {
+            await onDeleteItems(selectedItems);
+
+            setSelectedItems([]);
+
+        } catch (error) {
+            console.error("Deletion failed, selection not cleared.", error);
+        }
+    };
+
     const isAllSelected = items.length > 0 && selectedItems.length === items.length;
+    const firstItem = (currentPage - 1) * itemsPerPage + 1;
+    const lastItem = Math.min(currentPage * itemsPerPage, totalItems);
 
     return (
         <div className="container-xl">
@@ -70,10 +87,10 @@ export default function MainGrid({ title, columns, items, itemNoun }: MainGridPr
                                 <h2><b>{title}</b></h2>
                             </div>
                             <div className="col-sm-6">
-                                <Button onClick={() => setShowAddModal(true)} className="btn btn-success">
+                                <Button onClick={() => onAddItem()} className="btn btn-success">
                                     <i className="material-icons">&#xE147;</i> <span>Añadir {itemNoun}</span>
                                 </Button>
-                                <Button onClick={() => setShowDeleteModal(true)} className="btn btn-danger" disabled={selectedItems.length === 0}>
+                                <Button onClick={handleConfirmDelete} className="btn btn-danger" disabled={selectedItems.length === 0}>
                                     <i className="material-icons">&#xE15C;</i> <span>Eliminar</span>
                                 </Button>
                             </div>
@@ -110,18 +127,14 @@ export default function MainGrid({ title, columns, items, itemNoun }: MainGridPr
                                     </td>
                                     {columns.map(col => (
                                         <td key={`${item.id}-${col.key}`}>
-                                            {/* Use the helper function to render the cell */}
                                             {renderCellContent(item[col.key])}
                                         </td>
                                     ))}
                                     <td>
-                                        {/* Added action icons */}
-                                        {/* onClick={() => onEditItem(item)} */}
-                                        <a href="#edit" className="edit" >
+                                        <a href="#edit" className="edit" onClick={(e) => { e.preventDefault(); onEditItem(item); }}>
                                             <i className="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
                                         </a>
-                                        {/* onClick={() => onDeleteItems([item.id])} */}
-                                        <a href="#delete" className="delete" >
+                                        <a href="#delete" className="delete" onClick={(e) => { e.preventDefault(); onDeleteItems([item.id]); }}>
                                             <i className="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
                                         </a>
                                     </td>
@@ -131,13 +144,21 @@ export default function MainGrid({ title, columns, items, itemNoun }: MainGridPr
                     </table>
 
                     <div className="clearfix">
-                        <div className="hint-text">Mostrando <b>{items.length}</b> de <b>{items.length}</b> registros</div>
+                        <div className="hint-text">
+                            Mostrando <b>{firstItem}-{lastItem}</b> de <b>{totalItems}</b> registros
+                        </div>
                         <ul className="pagination">
-                            <li className="page-item disabled"><a href="#">Anterior</a></li>
-                            <li className="page-item active"><a href="#" className="page-link">1</a></li>
-                            <li className="page-item"><a href="#" className="page-link">2</a></li>
-                            <li className="page-item"><a href="#" className="page-link">3</a></li>
-                            <li className="page-item"><a href="#" className="page-link">Siguiente</a></li>
+                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                <a href="#" onClick={(e) => { e.preventDefault(); if (currentPage > 1) onPageChange(currentPage - 1); }} className="page-link">Anterior</a>
+                            </li>
+                            {Array.from({ length: Math.ceil(totalItems / itemsPerPage) }, (_, i) => i + 1).map(pageNumber => (
+                                <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
+                                    <a href="#" onClick={(e) => { e.preventDefault(); onPageChange(pageNumber); }} className="page-link">{pageNumber}</a>
+                                </li>
+                            ))}
+                            <li className={`page-item ${currentPage === Math.ceil(totalItems / itemsPerPage) ? 'disabled' : ''}`}>
+                                <a href="#" onClick={(e) => { e.preventDefault(); if (currentPage < Math.ceil(totalItems / itemsPerPage)) onPageChange(currentPage + 1); }} className="page-link">Siguiente</a>
+                            </li>
                         </ul>
                     </div>
                 </div>

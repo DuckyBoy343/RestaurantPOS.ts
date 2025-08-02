@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getRoles, getRoleById, updateRole, deleteRole, addRole } from '../models/roles.model';
+import { getRoles, getRoleById, updateRole, deleteRole, addRole, deleteRoles } from '../models/roles.model';
 
 export const getRolesList = async (_: Request, res: Response) => {
   try {
@@ -30,15 +30,19 @@ export const getRoleId = async (req: Request, res: Response) => {
 };
 
 export const createRole = async (req: Request, res: Response) => {
-  const { rol_nombre } = req.body;
+  const { rol_nombre, rol_estatus } = req.body;
 
   if (!rol_nombre || typeof rol_nombre !== 'string') {
     return res.status(400).json({ message: 'Nombre de rol es requerido y debe de ser un string' });
   }
 
+  if (rol_estatus !== undefined && typeof rol_estatus !== 'boolean') {
+    return res.status(400).json({ message: 'Estatus de rol debe ser un booleano' });
+  }
+
   try {
-    await addRole(rol_nombre);
-    res.status(201).json({ message: 'Rol creado' });
+    const newRole = await addRole(rol_nombre, rol_estatus);
+    res.status(201).json(newRole);
   } catch (err) {
     res.status(500).json({ message: 'Error creando rol', error: err });
   }
@@ -48,21 +52,33 @@ export const renovateRole = async (req: Request, res: Response) => {
   const id_rol = parseInt(req.params.id_rol);
   const { rol_nombre, rol_estatus } = req.body;
 
-  if (!rol_nombre || typeof rol_nombre !== 'string') {
-    return res.status(400).json({ message: 'Nombre de rol es requerido y debe de ser un string' });
-  }
-
   if (isNaN(id_rol)) {
     return res.status(400).json({ message: 'ID de rol inválido' });
   }
 
-  if (!rol_estatus || typeof rol_estatus !== 'boolean') {
-    return res.status(400).json({ message: 'Estatus de rol es requerido y debe ser un booleano' });
+  const fieldsToUpdate: { rol_nombre?: string; rol_estatus?: boolean } = {};
+
+  if (rol_nombre !== undefined) {
+    if (typeof rol_nombre !== 'string' || rol_nombre.trim() === '') {
+      return res.status(400).json({ message: 'Nombre de rol debe de ser un string' });
+    }
+    fieldsToUpdate.rol_nombre = rol_nombre;
+  }
+
+  if (rol_estatus !== undefined) {
+    if (typeof rol_estatus !== 'boolean') {
+      return res.status(400).json({ message: 'Estatus de rol debe ser un booleano' });
+    }
+    fieldsToUpdate.rol_estatus = rol_estatus;
+  }
+
+  if (Object.keys(fieldsToUpdate).length === 0) {
+    return res.status(400).json({ message: 'No fields to update provided.' });
   }
 
   try {
-    await updateRole(id_rol, rol_nombre, rol_estatus);
-    res.json({ message: 'Role updated' });
+    const updatedRole = await updateRole(id_rol, fieldsToUpdate);
+    res.status(201).json(updatedRole);
   } catch (err) {
     res.status(500).json({ message: 'Error actualizando rol', error: err });
   }
@@ -75,5 +91,20 @@ export const eliminateRole = async (req: Request, res: Response) => {
     res.json({ message: 'Role deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Error eliminando rol', error: err });
+  }
+};
+
+export const eliminateMultipleRoles = async (req: Request, res: Response) => {
+  const { ids } = req.body;
+
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: "Un arreglo de roles es necesario." });
+  }
+
+  try {
+    await deleteRoles(ids);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting roles", error });
   }
 };

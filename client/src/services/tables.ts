@@ -9,37 +9,19 @@ export async function fetchTableById(id_mesa: number): Promise<Table> {
   return api.get(`/tables/${id_mesa}`);
 }
 
-export async function createTable(data: {
-  mesa_nombre: number;
-}) {
-  const res = await fetch('/api/tables', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  return res.json();
+export async function createTable(data: { mesa_nombre: string; }): Promise<Table> {
+  return api.post('/tables/', data);
 }
 
 export async function updateTable(id_mesa: number, data: {
-  mesa_nombre: number;
+  mesa_nombre: string;
   mesa_estatus: boolean;
-}) {
-  const res = await fetch(`/api/tables/${id_mesa}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  return res.json();
+}): Promise<Table> {
+  return api.patch(`/tables/${id_mesa}`, data);
 }
 
-export async function deleteTable(id_mesa: number) {
-  const res = await fetch(`/api/tables/${id_mesa}`, {
-    method: 'DELETE',
-  });
-
-  return res.json();
+export async function deleteTable(ids: number[]): Promise<void> {
+  return api.post('/tables/delete-many', { ids });
 }
 
 export async function changeTableStatus(id_mesa: number, mesa_estatus: boolean) {

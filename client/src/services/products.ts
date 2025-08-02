@@ -6,7 +6,7 @@ export async function fetchProducts(): Promise<Product[]> {
 }
 
 export async function fetchProductById(id_producto: number) {
-  return fetch(`/api/products/${id_producto}`).then(res => res.json());
+  return api.get(`/products/${id_producto}`);
 }
 
 export async function createProduct(data: {
@@ -18,14 +18,8 @@ export async function createProduct(data: {
   producto_cantidad: number;
   producto_cantidad_minima: number;
   producto_disponible: boolean;
-}) {
-  const res = await fetch('/api/products', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  return res.json();
+}):Promise<Product> {
+  return api.post('/products/',data);
 }
 
 export async function updateProduct(id_producto: number, data: {
@@ -37,20 +31,10 @@ export async function updateProduct(id_producto: number, data: {
   producto_cantidad: number;
   producto_cantidad_minima: number;
   producto_disponible: boolean;
-}) {
-  const res = await fetch(`/api/products/${id_producto}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  return res.json();
+}):Promise<Product> {
+  return api.patch(`/products/${id_producto}`,data);
 }
 
-export async function deleteProduct(id_producto: number) {
-  const res = await fetch(`/api/products/${id_producto}`, {
-    method: 'DELETE',
-  });
-
-  return res.json();
+export async function deleteProduct(ids: number[]) {
+  return api.post('/products/delete-many', { ids });
 }

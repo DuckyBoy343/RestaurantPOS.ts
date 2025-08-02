@@ -5,8 +5,8 @@ const router = Router();
 
 router.get('/', getCategoriesList);
 router.post('/', createCategory);
-router.put('/:id_categoria', renovateCategory);
-router.delete('/:id_categoria', eliminateCategory);
+router.patch('/:id_categoria', renovateCategory);
+router.post('/delete-many', eliminateCategory);
 router.get('/:id_categoria', getCategoryId);
 
 export default router;

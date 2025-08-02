@@ -12,7 +12,7 @@ export async function getTables(): Promise<TableWithOrders[]> {
       'm.mesa_nombre',
       'o.id_orden',
       'm.mesa_estatus'
-    );
+    ).orderBy('id_mesa', 'asc');
     
   return tables;
 }
@@ -23,22 +23,23 @@ export async function getTableById(id_mesa: number): Promise<Table | undefined> 
     .first();
 }
 
-export async function addTable(mesa_nombre: string): Promise<void> {
-  await db('mesas').insert({ mesa_nombre });
+export async function addTable(mesa_nombre: string, mesa_estatus: boolean): Promise<void> {
+  const [newTable] = await db('mesas').insert({ mesa_nombre, mesa_estatus }).returning('*');
+  return newTable;
 }
 
 export async function updateTable(
   id_mesa: number,
-  mesa_nombre: string,
-  mesa_estatus: boolean
+  dataToUpdate: {mesa_nombre?: string, mesa_estatus?: boolean}
 ): Promise<void> {
-  await db('mesas')
+  const [updatedTable] = await db('mesas')
     .where({ id_mesa })
-    .update({ mesa_nombre, mesa_estatus });
+    .update(dataToUpdate).returning('*');
+  return updatedTable;
 }
 
-export async function deleteTable(id_mesa: number): Promise<void> {
-  await db('mesas').where({ id_mesa }).del();
+export async function deleteTable(ids: number[]): Promise<void> {
+  await db('mesas').whereIn('id_mesa',ids).del();
 }
 
 export async function updateTableStatus(

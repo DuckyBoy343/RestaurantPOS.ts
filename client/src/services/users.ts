@@ -1,9 +1,12 @@
-export async function fetchUsers() {
-  return fetch('/api/users').then(res => res.json());
+import { api } from '@/lib/api';
+import { User } from '@/types/user';
+
+export async function fetchUsers():Promise<User[]> {
+  return api.get('/users/');
 }
 
-export async function fetchUserById(id_usuario: number) {
-  return fetch(`/api/users/${id_usuario}`).then(res => res.json());
+export async function fetchUserById(id_usuario: number):Promise<User> {
+  return api.get(`/users/${id_usuario}`);
 }
 
 export async function createUser(data: {
@@ -11,14 +14,8 @@ export async function createUser(data: {
   usuario_nombre_completo: string;
   usuario_hash_contra: string;
   id_rol: number;
-}) {
-  const res = await fetch('/api/users', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  return res.json();
+}):Promise<User> {
+  return api.post('/users/',data);
 }
 
 export async function updateUser(id_usuario: number, data: {
@@ -27,20 +24,10 @@ export async function updateUser(id_usuario: number, data: {
   usuario_hash_contra: string;
   id_rol: number;
   usuario_estatus: boolean;
-}) {
-  const res = await fetch(`/api/users/${id_usuario}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  return res.json();
+}):Promise<User> {
+  return api.patch(`/users/${id_usuario}`,data);
 }
 
-export async function deleteUser(id_usuario: number) {
-  const res = await fetch(`/api/users/${id_usuario}`, {
-    method: 'DELETE',
-  });
-
-  return res.json();
+export async function deleteUser(ids: number[]) {
+  return api.post('/users/delete-many', { ids });
 }
