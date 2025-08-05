@@ -1,0 +1,53 @@
+/* Full page container with a gradient background */
+.mainContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem;
+}
+
+/* The main white login card */
+.loginCard {
+    width: 100%;
+    max-width: 420px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem; /* Add padding inside the card */
+}
+
+/* Style for the input fields */
+.inputField {
+    background-color: #f8f9fa; /* Light gray background */
+    border: 1px solid #e9ecef;
+}
+.inputField:focus {
+    background-color: #fff;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Style for the icon part of the input */
+.inputIcon {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+/* Style for the main login button */
+.loginButton {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    font-weight: bold;
+    padding: 0.75rem;
+    transition: transform 0.1s ease-in-out;
+}
+
+.loginButton:hover {
+    opacity: 0.9;
+}
+
+.loginButton:active {
+    transform: scale(0.98);
+}

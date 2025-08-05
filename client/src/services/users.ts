@@ -9,6 +9,10 @@ export async function fetchUserById(id_usuario: number):Promise<User> {
   return api.get(`/users/${id_usuario}`);
 }
 
+export async function fetchUserByUsername(usuario_nombre: string):Promise<User> {
+  return api.get(`/users/username?usuario_nombre=${usuario_nombre}`);
+}
+
 export async function createUser(data: {
   usuario_nombre: string;
   usuario_nombre_completo: string;

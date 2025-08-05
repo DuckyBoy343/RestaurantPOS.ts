@@ -1,18 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { type Item } from '@/types/item';
 import { type Role } from '@/types/role';
 import MainGrid from '@/components/MainGrid';
 import RoleModal from '@/components/RoleModal';
-import { createRole, updateRole, deleteMultipleRoles } from '@/services/roles';
+import { fetchRoles, createRole, updateRole, deleteMultipleRoles } from '@/services/roles';
 
-interface RolesClientProps {
-    initialItems: Role[];
-}
-
-export default function RolesClient({ initialItems }: RolesClientProps) {
-    const [allItems, setAllItems] = useState(initialItems);
+export default function RolesClient() {
+    const [allItems, setAllItems] = useState<Role[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [showModal, setShowModal] = useState(false);
     const [editingRole, setEditingRole] = useState<Role | null>(null);
@@ -22,6 +20,21 @@ export default function RolesClient({ initialItems }: RolesClientProps) {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedRoles = allItems.slice(startIndex, endIndex);
+
+    useEffect(() => {
+        const getRoles = async () => {
+            try {
+                const rolesData = await fetchRoles();
+                setAllItems(rolesData);
+            } catch (err) {
+                console.error("Failed to fetch roles:", err);
+                setError("Could not load roles.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        getRoles();
+    }, []);
 
     const handleOpenAddModal = () => {
         setEditingRole(null);
@@ -85,6 +98,13 @@ export default function RolesClient({ initialItems }: RolesClientProps) {
         id: role.id_rol,
         ...role,
     }));
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <>

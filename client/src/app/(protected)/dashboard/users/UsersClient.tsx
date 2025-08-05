@@ -6,19 +6,17 @@ import { type User } from '@/types/user';
 import { type Role } from '@/types/role'
 import MainGrid from '@/components/MainGrid';
 import UserModal from '@/components/UserModal';
-import { createUser, updateUser, deleteUser } from '@/services/users';
+import { fetchUsers, createUser, updateUser, deleteUser } from '@/services/users';
 import { fetchRoles } from '@/services/roles'
 
-interface UsersClientProps {
-    initialItems: User[];
-}
-
-export default function UsersClient({ initialItems }: UsersClientProps) {
-    const [allItems, setAllItems] = useState(initialItems);
+export default function UsersClient() {
+    const [allItems, setAllItems] = useState<User[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [roles, setRoles] = useState<Role[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const itemsPerPage = 10;
 
@@ -27,11 +25,23 @@ export default function UsersClient({ initialItems }: UsersClientProps) {
     const paginatedUsers = allItems.slice(startIndex, endIndex);
 
     useEffect(() => {
-        async function getRoles() {
-            const activeRoles = await fetchRoles();
-            setRoles(activeRoles);
-        }
-        getRoles();
+        const fetchData = async () => {
+            try {
+                // Use Promise.all to fetch both sets of data concurrently
+                const [usersData, rolesData] = await Promise.all([
+                    fetchUsers(),
+                    fetchRoles()
+                ]);
+                setAllItems(usersData);
+                setRoles(rolesData);
+            } catch (err) {
+                console.error("Failed to fetch data:", err);
+                setError("Could not load page data.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
     }, []);
 
 
@@ -99,6 +109,13 @@ export default function UsersClient({ initialItems }: UsersClientProps) {
         id: User.id_usuario,
         ...User,
     }));
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <>

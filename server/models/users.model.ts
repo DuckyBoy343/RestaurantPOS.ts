@@ -21,12 +21,18 @@ export async function getUserById(id_usuario: number): Promise<User | undefined>
     .first();
 }
 
+export async function getUserByUsername(usuario_nombre: string): Promise<User | undefined> {
+  return await db<User>('usuarios')
+    .where({ usuario_nombre })
+    .first();
+}
+
 export async function addUser(
   usuario_nombre: string,
   usuario_nombre_completo: string,
   usuario_hash_contra: string,
   id_rol: number
-): Promise<void> {
+): Promise<User> {
   const [newUser] = await db('usuarios').insert({
     usuario_nombre,
     usuario_nombre_completo,

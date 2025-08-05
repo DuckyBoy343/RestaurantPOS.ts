@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "bootstrap": "^5.3.7",
     "bootstrap-icons": "^1.13.1",
     "next": "15.4.2",
+    "next-auth": "^4.24.11",
     "pg": "^8.16.3",
     "react": "19.1.0",
     "react-bootstrap": "^2.10.10",
@@ -21,6 +23,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

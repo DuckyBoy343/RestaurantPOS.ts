@@ -1,42 +1,63 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Import useEffect
 import { useRouter } from 'next/navigation';
 import { Product } from '@/types/product';
 import { Category } from '@/types/category';
-import { Order, OrderDetail } from '@/types/order';
-import { saveOrderDetails, updateOrderDetails, closeOrder } from '@/services/orders';
+import { Order } from '@/types/order';
+import { fetchOrderById, fetchOrderDetails, saveOrderDetails, updateOrderDetails, closeOrder } from '@/services/orders';
+import { fetchProducts } from '@/services/products';
+import { fetchCategories } from '@/services/categories';
 import styles from '@/styles/OrderView.module.css';
 import ProductItem from '@/components/ProductItem';
 import OrderSummary from '@/components/OrderSummary';
 import CheckoutModal from '@/components/CheckoutModal';
 
-interface OrderClientProps {
-    initialOrder: Order;
-    initialProducts: Product[];
-    initialCategories: Category[];
-    initialOrderDetails: OrderDetail[];
-}
-
-export default function OrderClient({
-    initialOrder,
-    initialProducts,
-    initialCategories,
-    initialOrderDetails
-}: OrderClientProps) {
+export default function OrderClient() {
     const router = useRouter();
     const params = useParams();
     const id_orden = Number(params.id_orden);
-    const [orderInfo] = useState<Order>(initialOrder);
-    const [products] = useState<Product[]>(initialProducts);
-    const [categories] = useState<Category[]>(initialCategories);
-    const [isExistingOrder, setIsExistingOrder] = useState(initialOrderDetails.length > 0);
+    const [orderInfo, setOrderInfo] = useState<Order | null>(null);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [orderItems, setOrderItems] = useState<Map<number, number>>(new Map());
+    const [isExistingOrder, setIsExistingOrder] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
-    const [orderItems, setOrderItems] = useState<Map<number, number>>(() => {
-        return new Map(initialOrderDetails.map(item => [item.id_producto, Number(item.cantidad)]));
-    });
+    useEffect(() => {
+        if (!id_orden) return;
+
+        const fetchData = async () => {
+            try {
+                const [orderData, productsData, categoriesData, orderDetailsData] = await Promise.all([
+                    fetchOrderById(id_orden),
+                    fetchProducts(),
+                    fetchCategories(),
+                    fetchOrderDetails(id_orden)
+                ]);
+
+                setOrderInfo(orderData);
+                setProducts(productsData);
+                setCategories(categoriesData);
+
+                setOrderItems(new Map(orderDetailsData.map(item => [item.id_producto, Number(item.cantidad)])));
+                if (orderDetailsData.length > 0) {
+                    setIsExistingOrder(true);
+                }
+
+            } catch (err) {
+                console.error("Failed to fetch order data:", err);
+                setError("No se pudo cargar la información de la orden.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [id_orden]);
 
     const handleAddToOrder = (productId: number) => {
         setOrderItems(currentOrder => {
@@ -123,6 +144,14 @@ export default function OrderClient({
         const product = products.find(p => p.id_producto === productId);
         return total + (product ? product.producto_precio * quantity : 0);
     }, 0);
+
+    if (loading) {
+        return <div className="p-4"><h1>Loading Order...</h1></div>;
+    }
+
+    if (error || !orderInfo) {
+        return <div className="p-4"><h1>{error || "Order not found."}</h1></div>;
+    }
 
     return (
         <div className={styles.pageContainer}>

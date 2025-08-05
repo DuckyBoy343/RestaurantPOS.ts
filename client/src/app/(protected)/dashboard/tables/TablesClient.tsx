@@ -1,18 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { type Item } from '@/types/item';
 import { type Table } from '@/types/table';
 import MainGrid from '@/components/MainGrid';
 import TableModal from '@/components/TableModal';
-import { createTable, updateTable, deleteTable } from '@/services/tables';
+import { fetchTables ,createTable, updateTable, deleteTable } from '@/services/tables';
 
-interface TablesClientProps {
-    initialItems: Table[];
-}
-
-export default function TablesClient({ initialItems }: TablesClientProps) {
-    const [allItems, setAllItems] = useState(initialItems);
+export default function TablesClient() {
+    const [allItems, setAllItems] = useState<Table[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [showModal, setShowModal] = useState(false);
     const [editingTable, seteditingTable] = useState<Table | null>(null);
@@ -22,6 +20,21 @@ export default function TablesClient({ initialItems }: TablesClientProps) {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedTables = allItems.slice(startIndex, endIndex);
+
+    useEffect(() => {
+        const getTables = async () => {
+            try {
+                const tablesData = await fetchTables();
+                setAllItems(tablesData);
+            } catch (err) {
+                console.error("Failed to fetch tables:", err);
+                setError("Could not load tables.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        getTables();
+    }, []);
 
     const handleOpenAddModal = () => {
         seteditingTable(null);
@@ -85,6 +98,13 @@ export default function TablesClient({ initialItems }: TablesClientProps) {
         id: Table.id_mesa,
         ...Table,
     }));
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <>

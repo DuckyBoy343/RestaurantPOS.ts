@@ -10,21 +10,29 @@ import rolesRouter from './routes/roles.routes';
 import tablesRouter from './routes/tables.routes';
 import usersRouter from './routes/users.routes';
 import ordersRouter from './routes/orders.routes';
+import authRouter from './routes/auth.routes';
+import { authenticateToken } from './middleware/auth.middleware';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Your frontend URL
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 app.get('/api/ping', (_, res) => {
   res.send('API running');
 });
 
-app.use('/api/products', productsRouter);
-app.use('/api/categories', categoryRouter);
-app.use('/api/roles', rolesRouter);
-app.use('/api/tables', tablesRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/orders', ordersRouter);
+app.use('/api/auth', authRouter);
+
+app.use('/api/products', authenticateToken, productsRouter);
+app.use('/api/categories', authenticateToken, categoryRouter);
+app.use('/api/roles', authenticateToken, rolesRouter);
+app.use('/api/tables', authenticateToken, tablesRouter);
+app.use('/api/users', authenticateToken, usersRouter);
+app.use('/api/orders', authenticateToken, ordersRouter);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));

@@ -1,22 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { changeTableStatus } from '@/services/tables';
+import { changeTableStatus, fetchTables } from '@/services/tables';
 import { createOrder } from '@/services/orders';
 import { type Table, type TableWithOrders } from '@/types/table';
 import styles from '@/styles/TableView.module.css';
 import Modal from '@/components/Modal';
 
-interface FloorClientProps {
-    initialTables: TableWithOrders[];
-}
-
-export default function FloorClient({ initialTables }: FloorClientProps) {
+export default function FloorClient() {
     const router = useRouter();
-    const [tables] = useState(initialTables);
+    const [tables, setTables] = useState<TableWithOrders[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState<Table | null>(null);
+    const [loading, setLoading] = useState(true);
 
     const handleTableClick = (table: TableWithOrders) => {
         if (table.mesa_estatus) {
@@ -26,6 +23,21 @@ export default function FloorClient({ initialTables }: FloorClientProps) {
             router.push(`/orders/${table.id_orden}`);
         }
     };
+
+    useEffect(() => {
+        const getTables = async () => {
+            try {
+                const data = await fetchTables();
+                setTables(data);
+            } catch (error) {
+                console.error("Failed to fetch tables", error);
+                // Optionally set an error state here
+            } finally {
+                setLoading(false);
+            }
+        };
+        getTables();
+    }, []);
 
     const handleConfirmOrder = async () => {
         if (!selectedTable) return;
@@ -54,6 +66,10 @@ export default function FloorClient({ initialTables }: FloorClientProps) {
             setSelectedTable(null);
         }
     };
+
+    if (loading) {
+        return <div className={styles.container}><h1>Cargando...</h1></div>;
+    }
 
     return (
         <div className={styles.container}>

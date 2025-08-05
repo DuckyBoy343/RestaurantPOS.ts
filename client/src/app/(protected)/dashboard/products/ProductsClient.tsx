@@ -6,19 +6,17 @@ import { type Product } from '@/types/product';
 import { type Category } from '@/types/category';
 import MainGrid from '@/components/MainGrid';
 import ProductModal from '@/components/ProductModal';
-import { createProduct, updateProduct, deleteProduct } from '@/services/products';
+import { fetchProducts, createProduct, updateProduct, deleteProduct } from '@/services/products';
 import { fetchCategories } from '@/services/categories';
 
-interface ProductsClientProps {
-    initialItems: Product[];
-}
-
-export default function ProductsClient({ initialItems }: ProductsClientProps) {
-    const [allItems, setAllItems] = useState(initialItems);
+export default function ProductsClient() {
+    const [allItems, setAllItems] = useState<Product[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const itemsPerPage = 10;
 
@@ -27,11 +25,23 @@ export default function ProductsClient({ initialItems }: ProductsClientProps) {
     const paginatedProducts = allItems.slice(startIndex, endIndex);
 
     useEffect(() => {
-        async function getCategories() {
-            const activeCategories = await fetchCategories();
-            setCategories(activeCategories);
-        }
-        getCategories();
+        const fetchData = async () => {
+            try {
+                // Use Promise.all to fetch both sets of data concurrently
+                const [productsData, categoriesData] = await Promise.all([
+                    fetchProducts(),
+                    fetchCategories()
+                ]);
+                setAllItems(productsData);
+                setCategories(categoriesData);
+            } catch (err) {
+                console.error("Failed to fetch data:", err);
+                setError("Could not load page data.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
     }, []);
 
     const handleOpenAddModal = () => {
@@ -99,6 +109,13 @@ export default function ProductsClient({ initialItems }: ProductsClientProps) {
         id: Product.id_producto,
         ...Product,
     }));
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <>

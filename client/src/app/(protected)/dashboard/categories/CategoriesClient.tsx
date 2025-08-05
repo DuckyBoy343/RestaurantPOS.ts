@@ -1,27 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { type Item } from '@/types/item';
 import { type Category } from '@/types/category';
 import MainGrid from '@/components/MainGrid';
 import CategoryModal from '@/components/CategoryModal';
-import { createCategory, updateCategory, deleteCategory } from '@/services/categories';
+import { fetchCategories, createCategory, updateCategory, deleteCategory } from '@/services/categories';
 
-interface CategoryClientProps {
-    initialItems: Category[];
-}
-
-export default function CategoryClient({ initialItems }: CategoryClientProps) {
-    const [allItems, setAllItems] = useState(initialItems);
+export default function CategoryClient() {
+    const [allItems, setAllItems] = useState<Category[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [showModal, setShowModal] = useState(false);
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null)
 
     const itemsPerPage = 10;
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedCategories = allItems.slice(startIndex, endIndex);
+
+    useEffect(() => {
+        const getCategories = async () => {
+            try {
+                const categoriesData = await fetchCategories();
+                setAllItems(categoriesData);
+            } catch (err) {
+                console.error("Failed to fetch categories:", err);
+                setError("Could not load categories.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        getCategories();
+    }, []);
 
     const handleOpenAddModal = () => {
         setEditingCategory(null);
@@ -85,6 +98,13 @@ export default function CategoryClient({ initialItems }: CategoryClientProps) {
         id: category.id_categoria,
         ...category,
     }));
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <>

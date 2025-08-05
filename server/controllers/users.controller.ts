@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getUsers, getUserById, updateUser, deleteUser, addUser } from '../models/users.model';
+import { getUsers, getUserById, updateUser, deleteUser, addUser, getUserByUsername } from '../models/users.model';
 import { getRoleById } from '../models/roles.model';
 import bcrypt from 'bcrypt';
 
@@ -21,6 +21,25 @@ export const getUserId = async (req: Request, res: Response) => {
 
     try {
         const user = await getUserById(id_usuario);
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: 'Error recuperando usuario', error: err });
+    }
+}
+
+export const getUserName = async (req: Request, res: Response) => {
+    const { usuario_nombre } = req.query;
+
+    if (!usuario_nombre || typeof usuario_nombre !== 'string') {
+        return res.status(400).json({ message: 'Nombre de usuario es requerido y debe ser un string' });
+    }
+
+    try {
+        const user = await getUserByUsername(usuario_nombre);
         if (user) {
             res.json(user);
         } else {
