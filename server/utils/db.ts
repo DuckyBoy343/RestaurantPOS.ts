@@ -1,15 +1,12 @@
 import knex from 'knex';
-import 'dotenv/config'; // Make sure dotenv is loaded
+import path from 'path';
 
 const db = knex({
-  client: 'pg',
+  client: 'sqlite3',
   connection: {
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    filename: path.resolve(__dirname, '../../Restaurant.db')
   },
+  useNullAsDefault: true,
 });
 
 export default db;
