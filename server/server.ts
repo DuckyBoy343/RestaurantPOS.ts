@@ -11,6 +11,7 @@ import tablesRouter from './routes/tables.routes';
 import usersRouter from './routes/users.routes';
 import ordersRouter from './routes/orders.routes';
 import authRouter from './routes/auth.routes';
+import inventoryRouter from './routes/inventory.route';
 import { authenticateToken } from './middleware/auth.middleware';
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/roles', authenticateToken, rolesRouter);
 app.use('/api/tables', authenticateToken, tablesRouter);
 app.use('/api/users', authenticateToken, usersRouter);
 app.use('/api/orders', authenticateToken, ordersRouter);
+app.use('/api/inventory', authenticateToken, inventoryRouter);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));

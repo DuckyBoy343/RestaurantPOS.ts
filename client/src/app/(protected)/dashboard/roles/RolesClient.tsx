@@ -1,11 +1,13 @@
 'use client';
 
+import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import { type Item } from '@/types/item';
 import { type Role } from '@/types/role';
 import MainGrid from '@/components/MainGrid';
 import RoleModal from '@/components/RoleModal';
 import { fetchRoles, createRole, updateRole, deleteMultipleRoles } from '@/services/roles';
+import { showConfirmationToast } from '@/lib/toasts';
 
 export default function RolesClient() {
     const [allItems, setAllItems] = useState<Role[]>([]);
@@ -16,10 +18,6 @@ export default function RolesClient() {
     const [editingRole, setEditingRole] = useState<Role | null>(null);
 
     const itemsPerPage = 10;
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedRoles = allItems.slice(startIndex, endIndex);
 
     useEffect(() => {
         const getRoles = async () => {
@@ -54,39 +52,46 @@ export default function RolesClient() {
             if (editingRole) {
                 const updatedRole = await updateRole(editingRole.id_rol, data);
                 setAllItems(allItems.map(r => (r.id_rol === updatedRole.id_rol ? updatedRole : r)));
+                toast.success('Rol actualizada exitosamente.')
             } else {
                 const newRole = await createRole(data);
                 setAllItems([...allItems, newRole]);
+                toast.success('Rol creado exitosamente.')
             }
             setShowModal(false);
         } catch (error) {
             console.error("Failed to save role:", error);
-            alert("Error: No se pudo guardar el rol.");
+            toast.error("Error: No se pudo guardar el rol.");
         }
     };
 
     const handleDeleteItems = async (ids: (string | number)[]) => {
         if (ids.length === 0) {
-            alert("Seleccione al menos un elemento para eliminar.");
+            toast.error("Seleccione al menos un elemento para eliminar.");
             return;
         }
 
-        if (window.confirm(`¿Desea eliminar ${ids.length} elementos?`)) {
-            try {
-                const numericIds = ids.map(id => Number(id));
-                await deleteMultipleRoles(numericIds);
-
-                setAllItems(currentRoles =>
-                    currentRoles.filter(role => !numericIds.includes(role.id_rol))
-                );
-
-                alert("Eliminado exitosamente.");
-            } catch (error) {
-                console.error("Failed to delete roles:", error);
-                alert("Error: No se eliminaron correctamente.");
-            }
-        }
+        showConfirmationToast(
+            `¿Desea eliminar ${ids.length} elemento(s)?`,
+            () => performDelete(ids)
+        );
     };
+
+    const performDelete = async (ids: (string | number)[]) => {
+        try {
+            const numericIds = ids.map(id => Number(id));
+            await deleteMultipleRoles(numericIds);
+
+            setAllItems(currentRoles =>
+                currentRoles.filter(role => !numericIds.includes(role.id_rol))
+            );
+
+            toast.success("Eliminado exitosamente.");
+        } catch (error) {
+            console.error("Failed to delete roles:", error);
+            toast.error("Error: No se eliminaron correctamente.");
+        }
+    }
 
     const roleColumns = [
         { key: 'id_rol', label: 'ID' },
@@ -94,9 +99,9 @@ export default function RolesClient() {
         { key: 'rol_estatus', label: 'Estatus' },
     ];
 
-    const gridItems: Item[] = paginatedRoles.map(role => ({
-        id: role.id_rol,
-        ...role,
+    const gridItems: Item[] = allItems.map(InventoryLog => ({
+        id: InventoryLog.id_rol,
+        ...InventoryLog,
     }));
 
     if (loading) {

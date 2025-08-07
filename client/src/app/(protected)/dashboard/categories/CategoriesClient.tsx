@@ -1,11 +1,13 @@
 'use client';
 
+import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import { type Item } from '@/types/item';
 import { type Category } from '@/types/category';
 import MainGrid from '@/components/MainGrid';
 import CategoryModal from '@/components/CategoryModal';
 import { fetchCategories, createCategory, updateCategory, deleteCategory } from '@/services/categories';
+import { showConfirmationToast } from '@/lib/toasts';
 
 export default function CategoryClient() {
     const [allItems, setAllItems] = useState<Category[]>([]);
@@ -16,10 +18,6 @@ export default function CategoryClient() {
     const [error, setError] = useState<string | null>(null)
 
     const itemsPerPage = 10;
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedCategories = allItems.slice(startIndex, endIndex);
 
     useEffect(() => {
         const getCategories = async () => {
@@ -54,39 +52,46 @@ export default function CategoryClient() {
             if (editingCategory) {
                 const updatedCategory = await updateCategory(editingCategory.id_categoria, data);
                 setAllItems(allItems.map(r => (r.id_categoria === updatedCategory.id_categoria ? updatedCategory : r)));
+                toast.success('Categoria actualizado exitosamente.');
             } else {
                 const newCategory = await createCategory(data);
                 setAllItems([...allItems, newCategory]);
+                toast.success('Categoria actualizado exitosamente.');
             }
             setShowModal(false);
         } catch (error) {
             console.error("Failed to save category:", error);
-            alert("Error: No se pudo guardar la categoria.");
+            toast.error("Error: No se pudo guardar la categoria.");
         }
     };
 
     const handleDeleteItems = async (ids: (string | number)[]) => {
         if (ids.length === 0) {
-            alert("Seleccione al menos un elemento para eliminar.");
+            toast.error("Seleccione al menos un elemento para eliminar.");
             return;
         }
 
-        if (window.confirm(`¿Desea eliminar ${ids.length} elementos?`)) {
-            try {
-                const numericIds = ids.map(id => Number(id));
-                await deleteCategory(numericIds);
-
-                setAllItems(currentRoles =>
-                    currentRoles.filter(role => !numericIds.includes(role.id_categoria))
-                );
-
-                alert("Eliminado exitosamente.");
-            } catch (error) {
-                console.error("Failed to delete categories:", error);
-                alert("Error: No se eliminaron correctamente.");
-            }
-        }
+        showConfirmationToast(
+            `¿Desea eliminar ${ids.length} elemento(s)?`,
+            () => performDelete(ids)
+        );
     };
+
+    const performDelete = async (ids: (string | number)[]) => {
+        try {
+            const numericIds = ids.map(id => Number(id));
+            await deleteCategory(numericIds);
+
+            setAllItems(currentRoles =>
+                currentRoles.filter(role => !numericIds.includes(role.id_categoria))
+            );
+
+            toast.success("Eliminado exitosamente.");
+        } catch (error) {
+            console.error("Failed to delete categories:", error);
+            toast.error("Error: No se eliminaron correctamente.");
+        }
+    }
 
     const roleColumns = [
         { key: 'id_categoria', label: 'ID' },
@@ -94,9 +99,9 @@ export default function CategoryClient() {
         { key: 'categoria_estatus', label: 'Estatus' },
     ];
 
-    const gridItems: Item[] = paginatedCategories.map(category => ({
-        id: category.id_categoria,
-        ...category,
+    const gridItems: Item[] = allItems.map(InventoryLog => ({
+        id: InventoryLog.id_categoria,
+        ...InventoryLog,
     }));
 
     if (loading) {

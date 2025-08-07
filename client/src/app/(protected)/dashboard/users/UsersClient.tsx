@@ -1,5 +1,6 @@
 'use client';
 
+import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import { type Item } from '@/types/item';
 import { type User } from '@/types/user';
@@ -8,6 +9,7 @@ import MainGrid from '@/components/MainGrid';
 import UserModal from '@/components/UserModal';
 import { fetchUsers, createUser, updateUser, deleteUser } from '@/services/users';
 import { fetchRoles } from '@/services/roles'
+import { showConfirmationToast } from '@/lib/toasts';
 
 export default function UsersClient() {
     const [allItems, setAllItems] = useState<User[]>([]);
@@ -20,14 +22,9 @@ export default function UsersClient() {
 
     const itemsPerPage = 10;
 
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedUsers = allItems.slice(startIndex, endIndex);
-
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Use Promise.all to fetch both sets of data concurrently
                 const [usersData, rolesData] = await Promise.all([
                     fetchUsers(),
                     fetchRoles()
@@ -63,37 +60,43 @@ export default function UsersClient() {
             if (editingUser) {
                 const updatedUser = await updateUser(editingUser.id_usuario, data);
                 setAllItems(allItems.map(r => (r.id_usuario === updatedUser.id_usuario ? updatedUser : r)));
+                toast.success('Usuario actualizado exitosamente.');
             } else {
                 const newUser = await createUser(data);
                 setAllItems([...allItems, newUser]);
+                toast.success('Usuario creado exitosamente.')
             }
             setShowModal(false);
         } catch (error) {
             console.error("Failed to save User:", error);
-            alert("Error: No se pudo guardar el usuario.");
+            toast.error("Error: No se pudo guardar el usuario.");
         }
     };
 
     const handleDeleteItems = async (ids: (string | number)[]) => {
         if (ids.length === 0) {
-            alert("Seleccione al menos un elemento para eliminar.");
+            toast.error("Seleccione al menos un elemento para eliminar.");
             return;
         }
 
-        if (window.confirm(`¿Desea eliminar ${ids.length} elementos?`)) {
-            try {
-                const numericIds = ids.map(id => Number(id));
-                await deleteUser(numericIds);
+        showConfirmationToast(
+            `¿Desea eliminar ${ids.length} elemento(s)?`,
+            () => performDelete(ids)
+        );
+    };
 
-                setAllItems(currentUsers =>
-                    currentUsers.filter(User => !numericIds.includes(User.id_usuario))
-                );
+    const performDelete = async (ids: (string | number)[]) => {
+        try {
+            const numericIds = ids.map(id => Number(id));
+            await deleteUser(numericIds);
 
-                alert("Eliminado exitosamente.");
-            } catch (error) {
-                console.error("Failed to delete Users:", error);
-                alert("Error: No se eliminaron correctamente.");
-            }
+            setAllItems(currentUsers =>
+                currentUsers.filter(user => !numericIds.includes(user.id_usuario))
+            );
+            toast.success("Eliminado exitosamente.");
+        } catch (error) {
+            console.error("Failed to delete Users:", error);
+            toast.error("Error: No se eliminaron correctamente.");
         }
     };
 
@@ -105,9 +108,9 @@ export default function UsersClient() {
         { key: 'usuario_estatus', label: 'Estatus' },
     ];
 
-    const gridItems: Item[] = paginatedUsers.map(User => ({
-        id: User.id_usuario,
-        ...User,
+    const gridItems: Item[] = allItems.map(InventoryLog => ({
+        id: InventoryLog.id_usuario,
+        ...InventoryLog,
     }));
 
     if (loading) {

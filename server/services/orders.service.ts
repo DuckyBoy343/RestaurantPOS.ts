@@ -76,7 +76,7 @@ export async function closeOrder(id_orden: number, venta_metodo_pago: string): P
 
       await trx('bitacora_inventarios').insert({
         id_producto: item.id_producto,
-        cantidad: -item.cantidad, // Negative for a sale
+        cantidad: -item.cantidad,
         accion: `Venta #${newVentaId}`
       });
     }

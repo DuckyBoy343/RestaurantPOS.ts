@@ -1,5 +1,6 @@
 'use client';
 
+import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { changeTableStatus, fetchTables } from '@/services/tables';
@@ -31,7 +32,6 @@ export default function FloorClient() {
                 setTables(data);
             } catch (error) {
                 console.error("Failed to fetch tables", error);
-                // Optionally set an error state here
             } finally {
                 setLoading(false);
             }
@@ -60,7 +60,7 @@ export default function FloorClient() {
             }
         } catch (error) {
             console.error("Error creating order:", error);
-            alert("Error al crear la order.");
+            toast.error("Error al crear la order.");
         } finally {
             setIsModalOpen(false);
             setSelectedTable(null);

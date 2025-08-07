@@ -2,6 +2,7 @@
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import styles from '@/styles/MainGrid.module.css';
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { Item } from '../types/item';
@@ -40,10 +41,29 @@ const renderCellContent = (value: unknown) => {
     return String(value ?? '');
 };
 
-export default function MainGrid({ title, columns, items, itemNoun, onAddItem, onEditItem, onDeleteItems, totalItems, itemsPerPage, currentPage, onPageChange }: MainGridProps) {
+const getCellValueAsString = (value: unknown): string => {
+    if (typeof value === 'boolean') {
+        return value ? 'Activo' : 'Inactivo';
+    }
+    return String(value ?? '');
+};
+
+
+export default function MainGrid({ title, columns, items, itemNoun, onAddItem, onEditItem, onDeleteItems, itemsPerPage, currentPage, onPageChange }: MainGridProps) {
     const [selectedItems, setSelectedItems] = useState<(string | number)[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [filterText, setFilterText] = useState('');
+
+    const filteredItems = items.filter(item => {
+        return Object.values(item).some(value =>
+            getCellValueAsString(value).toLowerCase().includes(filterText.toLowerCase())
+        );
+    });
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedItems = filteredItems.slice(startIndex, endIndex);
 
     const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
@@ -73,27 +93,43 @@ export default function MainGrid({ title, columns, items, itemNoun, onAddItem, o
         }
     };
 
-    const isAllSelected = items.length > 0 && selectedItems.length === items.length;
+    const isAllSelected = paginatedItems.length > 0 && selectedItems.length === paginatedItems.length;
     const firstItem = (currentPage - 1) * itemsPerPage + 1;
-    const lastItem = Math.min(currentPage * itemsPerPage, totalItems);
+    const lastItem = Math.min(currentPage * itemsPerPage, filteredItems.length);
 
     return (
         <div className="container-xl">
             <div className="table-responsive">
                 <div className="table-wrapper">
                     <div className="table-title">
-                        <div className="row">
-                            <div className="col-sm-6">
+                        <div className="row align-items-center">
+
+                            <div className="col">
                                 <h2><b>{title}</b></h2>
                             </div>
-                            <div className="col-sm-6">
-                                <Button onClick={() => onAddItem()} className="btn btn-success">
+
+                            <div className="col-auto">
+                                <Button onClick={onAddItem} className="btn btn-success me-2 d-inline-flex align-items-center">
                                     <i className="material-icons">&#xE147;</i> <span>Añadir {itemNoun}</span>
                                 </Button>
-                                <Button onClick={handleConfirmDelete} className="btn btn-danger" disabled={selectedItems.length === 0}>
+                                <Button onClick={() => handleConfirmDelete()} className="btn btn-danger d-inline-flex align-items-center" disabled={selectedItems.length === 0}>
                                     <i className="material-icons">&#xE15C;</i> <span>Eliminar</span>
                                 </Button>
                             </div>
+
+                            <div className={`col-auto ${styles.searchBar}`}>
+                                <div className="input-group">
+                                    <span className="input-group-text"><i className="bi bi-search"></i></span>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder={`Buscar ${itemNoun}...`}
+                                        value={filterText}
+                                        onChange={(e) => setFilterText(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -111,7 +147,7 @@ export default function MainGrid({ title, columns, items, itemNoun, onAddItem, o
                             </tr>
                         </thead>
                         <tbody>
-                            {items.map((item) => (
+                            {paginatedItems.map((item) => (
                                 <tr key={item.id}>
                                     <td>
                                         <span className="custom-checkbox">
@@ -127,7 +163,7 @@ export default function MainGrid({ title, columns, items, itemNoun, onAddItem, o
                                     </td>
                                     {columns.map(col => (
                                         <td key={`${item.id}-${col.key}`}>
-                                            {renderCellContent(item[col.key])}
+                                            {renderCellContent((item as any)[col.key])}
                                         </td>
                                     ))}
                                     <td>
@@ -145,19 +181,19 @@ export default function MainGrid({ title, columns, items, itemNoun, onAddItem, o
 
                     <div className="clearfix">
                         <div className="hint-text">
-                            Mostrando <b>{firstItem}-{lastItem}</b> de <b>{totalItems}</b> registros
+                            Mostrando <b>{paginatedItems.length > 0 ? firstItem : 0}-{lastItem}</b> de <b>{filteredItems.length}</b> registros
                         </div>
                         <ul className="pagination">
                             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                                 <a href="#" onClick={(e) => { e.preventDefault(); if (currentPage > 1) onPageChange(currentPage - 1); }} className="page-link">Anterior</a>
                             </li>
-                            {Array.from({ length: Math.ceil(totalItems / itemsPerPage) }, (_, i) => i + 1).map(pageNumber => (
+                            {Array.from({ length: Math.ceil(filteredItems.length / itemsPerPage) }, (_, i) => i + 1).map(pageNumber => (
                                 <li key={pageNumber} className={`page-item ${currentPage === pageNumber ? 'active' : ''}`}>
                                     <a href="#" onClick={(e) => { e.preventDefault(); onPageChange(pageNumber); }} className="page-link">{pageNumber}</a>
                                 </li>
                             ))}
-                            <li className={`page-item ${currentPage === Math.ceil(totalItems / itemsPerPage) ? 'disabled' : ''}`}>
-                                <a href="#" onClick={(e) => { e.preventDefault(); if (currentPage < Math.ceil(totalItems / itemsPerPage)) onPageChange(currentPage + 1); }} className="page-link">Siguiente</a>
+                            <li className={`page-item ${currentPage === Math.ceil(filteredItems.length / itemsPerPage) ? 'disabled' : ''}`}>
+                                <a href="#" onClick={(e) => { e.preventDefault(); if (currentPage < Math.ceil(filteredItems.length / itemsPerPage)) onPageChange(currentPage + 1); }} className="page-link">Siguiente</a>
                             </li>
                         </ul>
                     </div>

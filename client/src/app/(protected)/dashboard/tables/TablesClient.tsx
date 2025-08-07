@@ -1,11 +1,13 @@
 'use client';
 
+import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import { type Item } from '@/types/item';
 import { type Table } from '@/types/table';
 import MainGrid from '@/components/MainGrid';
 import TableModal from '@/components/TableModal';
-import { fetchTables ,createTable, updateTable, deleteTable } from '@/services/tables';
+import { fetchTables, createTable, updateTable, deleteTable } from '@/services/tables';
+import { showConfirmationToast } from '@/lib/toasts';
 
 export default function TablesClient() {
     const [allItems, setAllItems] = useState<Table[]>([]);
@@ -16,10 +18,6 @@ export default function TablesClient() {
     const [editingTable, seteditingTable] = useState<Table | null>(null);
 
     const itemsPerPage = 10;
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedTables = allItems.slice(startIndex, endIndex);
 
     useEffect(() => {
         const getTables = async () => {
@@ -54,39 +52,46 @@ export default function TablesClient() {
             if (editingTable) {
                 const updatedTable = await updateTable(editingTable.id_mesa, data);
                 setAllItems(allItems.map(t => (t.id_mesa === updatedTable.id_mesa ? updatedTable : t)));
+                toast.success('Mesa actualizada exitosamente.')
             } else {
                 const newTable = await createTable(data);
                 setAllItems([...allItems, newTable]);
+                toast.success('Mesa creado exitosamente.')
             }
             setShowModal(false);
         } catch (error) {
             console.error("Failed to save Table:", error);
-            alert("Error: No se pudo guardar la mesa.");
+            toast.error("Error: No se pudo guardar la mesa.");
         }
     };
 
     const handleDeleteItems = async (ids: (string | number)[]) => {
         if (ids.length === 0) {
-            alert("Seleccione al menos un elemento para eliminar.");
+            toast.error("Seleccione al menos un elemento para eliminar.");
             return;
         }
 
-        if (window.confirm(`¿Desea eliminar ${ids.length} elementos?`)) {
-            try {
-                const numericIds = ids.map(id => Number(id));
-                await deleteTable(numericIds);
-
-                setAllItems(currentTables =>
-                    currentTables.filter(Table => !numericIds.includes(Table.id_mesa))
-                );
-
-                alert("Eliminado exitosamente.");
-            } catch (error) {
-                console.error("Failed to delete Tables:", error);
-                alert("Error: No se eliminaron correctamente.");
-            }
-        }
+        showConfirmationToast(
+            `¿Desea eliminar ${ids.length} elemento(s)?`,
+            () => performDelete(ids)
+        );
     };
+
+    const performDelete = async (ids: (string | number)[]) => {
+        try {
+            const numericIds = ids.map(id => Number(id));
+            await deleteTable(numericIds);
+
+            setAllItems(currentTables =>
+                currentTables.filter(Table => !numericIds.includes(Table.id_mesa))
+            );
+
+            toast.success("Eliminado exitosamente.");
+        } catch (error) {
+            console.error("Failed to delete Tables:", error);
+            toast.error("Error: No se eliminaron correctamente.");
+        }
+    }
 
     const TableColumns = [
         { key: 'id_mesa', label: 'ID' },
@@ -94,9 +99,9 @@ export default function TablesClient() {
         { key: 'mesa_estatus', label: 'Estatus' },
     ];
 
-    const gridItems: Item[] = paginatedTables.map(Table => ({
-        id: Table.id_mesa,
-        ...Table,
+    const gridItems: Item[] = allItems.map(InventoryLog => ({
+        id: InventoryLog.id_mesa,
+        ...InventoryLog,
     }));
 
     if (loading) {

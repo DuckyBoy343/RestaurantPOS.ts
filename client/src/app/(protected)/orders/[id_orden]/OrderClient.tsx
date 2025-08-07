@@ -1,5 +1,6 @@
 'use client';
 
+import toast from 'react-hot-toast';
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react'; // Import useEffect
 import { useRouter } from 'next/navigation';
@@ -105,22 +106,22 @@ export default function OrderClient() {
             .filter((item): item is OrderDetailPayload => item !== null);
 
         if (orderDetailsPayload.length === 0) {
-            alert("No hay productos en el pedido.");
+            toast.error("No hay productos en el pedido.");
             return;
         }
 
         try {
             if (isExistingOrder) {
                 await updateOrderDetails(id_orden, orderDetailsPayload);
-                alert("Pedido actualizado exitosamente.");
+                toast.success("Pedido actualizado exitosamente.");
             } else {
                 await saveOrderDetails(id_orden, orderDetailsPayload);
-                alert("Pedido confirmado y guardado!");
+                toast.success("Pedido confirmado y guardado!");
                 setIsExistingOrder(true);
             }
         } catch (error) {
             console.error('Error creating order detail:', error);
-            alert("Error al guardar el pedido.");
+            toast.error("Error al guardar el pedido.");
         }
     }
 
@@ -130,11 +131,11 @@ export default function OrderClient() {
         try {
             await handleSaveOrder();
             await closeOrder(orderInfo.id_orden, paymentMethod);
-            alert("¡Venta finalizada exitosamente!");
+            toast.success("¡Venta finalizada exitosamente!");
             router.push('/floor');
         } catch (error) {
             console.error("Failed to close order:", error);
-            alert("Hubo un error al finalizar la venta.");
+            toast.error("Hubo un error al finalizar la venta.");
         } finally {
             setIsCheckoutModalOpen(false);
         }
