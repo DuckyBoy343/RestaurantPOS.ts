@@ -37,20 +37,22 @@ export const getOrderId = async (req: Request, res: Response) => {
 };
 
 export const createOrder = async (req: Request, res: Response) => {
-    const { id_mesa, id_usuario } = req.body;
+    const { id_mesa, id_usuario, tipo_orden } = req.body;
 
-    const mesa = await getTableById(id_mesa);
+    if (id_mesa !== null) {
+        const mesa = await getTableById(id_mesa);
 
-    if (isNaN(id_mesa)) {
-        return res.status(400).json({ message: "ID de mesa invalido" });
-    }
+        if (isNaN(id_mesa)) {
+            return res.status(400).json({ message: "ID de mesa invalido" });
+        }
 
-    if (!mesa) {
-        return res.status(404).json({ message: "Mesa no encontrada" });
+        if (!mesa) {
+            return res.status(404).json({ message: "Mesa no encontrada" });
+        }
     }
 
     try {
-        const newOrder = await addOrder(id_mesa, id_usuario);
+        const newOrder = await addOrder(id_mesa, id_usuario, tipo_orden);
         res.status(201).json({ newOrder, message: "Pedido creado exitosamente" });
     } catch (err) {
         res.status(500).json({ message: "Error creando pedido", error: err });

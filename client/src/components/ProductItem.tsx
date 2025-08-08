@@ -24,7 +24,7 @@ export default function ProductItem({ product, quantity, onAdd, onRemove }: Prod
         <button onClick={onAdd} className={`${styles.quantityButton} ${styles.incrementButton}`}>+</button>
       </div>
 
-      <button className={styles.detailsButton}>detalles</button>
+      {/* <button className={styles.detailsButton}>detalles</button> */}
     </div>
   );
 }

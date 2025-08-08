@@ -5,6 +5,7 @@ export interface Order {
   fecha_creacion: string;
   estado: string;
   total_provisional: number;
+  tipo_order?: string;
 }
 
 export interface OrderDetail {
@@ -13,12 +14,10 @@ export interface OrderDetail {
   id_producto: number;
   cantidad: number;
   precio_unitario: number;
-  notas?: string;
 }
 
 export interface OrderDetailUpdate {
   id_producto: number;
   cantidad: number;
   precio_unitario: number;
-  notas?: string | null;
 }

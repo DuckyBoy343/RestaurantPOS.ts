@@ -55,10 +55,7 @@ export const renovateCategory = async (req: Request, res: Response) => {
   }
 
   if (categoria_estatus !== undefined) {
-    if (typeof categoria_estatus !== 'boolean') {
-      return res.status(400).json({ message: 'Estatus de la categoria debe ser un booleano' });
-    }
-    fieldsToUpdate.categoria_estatus = categoria_estatus;
+    fieldsToUpdate.categoria_estatus = [1, '1', 'true', true].includes(categoria_estatus);
   }
 
   if (Object.keys(fieldsToUpdate).length === 0) {

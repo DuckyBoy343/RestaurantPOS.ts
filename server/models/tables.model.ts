@@ -5,14 +5,14 @@ export async function getTables(): Promise<TableWithOrders[]> {
   const tables = await db('mesas as m')
     .leftJoin('ordenes as o', function() {
       this.on('m.id_mesa', '=', 'o.id_mesa')
-          .andOn('o.estado', '=', db.raw("true"));
+          .andOn('o.estado', '=', db.raw('1'));
     })
     .select(
       'm.id_mesa',
       'm.mesa_nombre',
       'o.id_orden',
       'm.mesa_estatus'
-    ).orderBy('id_mesa', 'asc');
+    ).orderBy('m.id_mesa', 'asc');
     
   return tables;
 }

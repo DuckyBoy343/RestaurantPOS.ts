@@ -14,10 +14,12 @@ export async function getOrderById(id_orden: number): Promise<Order | undefined>
 export async function addOrder(
     id_mesa: number,
     id_usuario: number,
+    tipo_orden?: string,
 ): Promise<Order> {
     const [newOrder] = await db('ordenes').insert({
         id_mesa,
         id_usuario,
+        tipo_orden
     }).returning('*');
     return newOrder;
 }

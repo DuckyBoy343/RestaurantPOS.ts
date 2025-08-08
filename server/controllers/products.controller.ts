@@ -159,10 +159,7 @@ export const renovateProduct = async (req: Request, res: Response) => {
   }
 
   if (producto_disponible !== undefined) {
-    if (typeof producto_disponible !== 'boolean') {
-      return res.status(400).json({ message: 'Disponibilidad de producto es requerida y debe ser un booleano' });
-    }
-    fieldsToUpdate.producto_disponible = producto_disponible;
+    fieldsToUpdate.producto_disponible = [1, '1', 'true', true].includes(producto_disponible);
   }
 
   try {

@@ -66,10 +66,7 @@ export const renovateRole = async (req: Request, res: Response) => {
   }
 
   if (rol_estatus !== undefined) {
-    if (typeof rol_estatus !== 'boolean') {
-      return res.status(400).json({ message: 'Estatus de rol debe ser un booleano' });
-    }
-    fieldsToUpdate.rol_estatus = rol_estatus;
+    fieldsToUpdate.rol_estatus = [1, '1', 'true', true].includes(rol_estatus);
   }
 
   if (Object.keys(fieldsToUpdate).length === 0) {

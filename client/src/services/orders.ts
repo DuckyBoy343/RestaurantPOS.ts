@@ -7,8 +7,9 @@ interface CreateOrderResponse {
 }
 
 export async function createOrder(data: {
-    id_mesa: number,
-    id_usuario: number
+    id_mesa: number | null,
+    id_usuario: number,
+    tipo_orden: string
 }) {
     return api.post<CreateOrderResponse>('/orders/', data)
 }

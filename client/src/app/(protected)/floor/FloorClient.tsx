@@ -15,6 +15,7 @@ export default function FloorClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState<Table | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const handleTableClick = (table: TableWithOrders) => {
         if (table.mesa_estatus) {
@@ -46,6 +47,7 @@ export default function FloorClient() {
             const data = {
                 id_usuario: 1, // This will come from a session later
                 id_mesa: selectedTable.id_mesa,
+                tipo_orden: "Comer aqui",
             };
             const response = await createOrder(data);
             const newOrderData = response.newOrder;
@@ -66,6 +68,31 @@ export default function FloorClient() {
             setSelectedTable(null);
         }
     };
+
+    const handleTakeoutOrder = async () => {
+        setIsProcessing(true);
+        try {
+            const data = {
+                id_usuario: 1,
+                id_mesa: null,
+                tipo_orden: 'Para llevar',
+            };
+            const response = await createOrder(data);
+            const newOrderData = response.newOrder;
+
+            if (newOrderData && newOrderData.id_orden) {
+                router.push(`/orders/${newOrderData.id_orden}`);
+            } else {
+                throw new Error('No se pudo crear la orden para llevar.');
+            }
+        } catch (error) {
+            console.error("Error creating takeout order:", error);
+            toast.error("Error al crear la orden para llevar.");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
 
     if (loading) {
         return <div className={styles.container}><h1>Cargando...</h1></div>;
@@ -89,6 +116,16 @@ export default function FloorClient() {
                         </div>
                     );
                 })}
+            </div>
+
+            <div className={styles.actionsContainer}>
+                <button
+                    className={styles.takeoutButton}
+                    onClick={handleTakeoutOrder}
+                    disabled={isProcessing}
+                >
+                    {isProcessing ? 'Creando...' : 'Orden Para Llevar'}
+                </button>
             </div>
 
             <Modal

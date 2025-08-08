@@ -149,10 +149,7 @@ export const renovateUser = async (req: Request, res: Response) => {
     fieldsToUpdate.id_rol = id_rol
 
     if (usuario_estatus !== undefined) {
-        if (typeof usuario_estatus !== 'boolean') {
-            return res.status(400).json({ message: 'Estatus del usuario debe ser un booleano' });
-        }
-        fieldsToUpdate.usuario_estatus = usuario_estatus;
+        fieldsToUpdate.usuario_estatus = [1, '1', 'true', true].includes(usuario_estatus);
     }
 
     try {

@@ -66,10 +66,7 @@ export const renovateTable = async (req: Request, res: Response) => {
     }
 
     if (mesa_estatus !== undefined) {
-        if (typeof mesa_estatus !== 'boolean') {
-            return res.status(400).json({ message: 'Estatus de rol debe ser un booleano' });
-        }
-        fieldsToUpdate.mesa_estatus = mesa_estatus;
+        fieldsToUpdate.mesa_estatus = [1, '1', 'true', true].includes(mesa_estatus);
     }
 
     if (Object.keys(fieldsToUpdate).length === 0) {

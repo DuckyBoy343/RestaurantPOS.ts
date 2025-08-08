@@ -27,7 +27,8 @@ interface MainGridProps {
 }
 
 const renderCellContent = (value: unknown) => {
-    if (typeof value === 'boolean') {
+    console.log("Valor: ", value);
+    if (typeof value === 'number') {
         return value ? (
             <span className="status-badge text-success">
                 <i className="bi bi-check-circle-fill"></i> Activo
@@ -40,6 +41,8 @@ const renderCellContent = (value: unknown) => {
     }
     return String(value ?? '');
 };
+
+const isEstatusLabel = (label?: string) => !!label && /estatus/i.test(label);
 
 const getCellValueAsString = (value: unknown): string => {
     if (typeof value === 'boolean') {
@@ -161,11 +164,18 @@ export default function MainGrid({ title, columns, items, itemNoun, onAddItem, o
                                             <label htmlFor={`checkbox${item.id}`}></label>
                                         </span>
                                     </td>
-                                    {columns.map(col => (
-                                        <td key={`${item.id}-${col.key}`}>
-                                            {renderCellContent((item as any)[col.key])}
-                                        </td>
-                                    ))}
+                                    {columns.map((col, idx) => {
+                                        const val = (item as Item)[col.key];
+                                        const isLast = idx === columns.length - 1;
+                                        const shouldUseRenderer =
+                                            isEstatusLabel(col.label) || (isLast && typeof val === 'number');
+
+                                        return (
+                                            <td key={`${item.id}-${col.key}`}>
+                                                {shouldUseRenderer ? renderCellContent(val) : String(val ?? '')}
+                                            </td>
+                                        );
+                                    })}
                                     <td>
                                         <a href="#edit" className="edit" onClick={(e) => { e.preventDefault(); onEditItem(item); }}>
                                             <i className="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>

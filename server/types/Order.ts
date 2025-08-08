@@ -5,4 +5,5 @@ export interface Order {
     fecha_creacion: Date;
     estado: boolean;
     total_provisional: number;
+    tipo_orden?: string;
 }

@@ -1,5 +1,6 @@
 import ProtectedRoute from '@/components/ProtectedRoute';
-import LogoutButton from '@/components/LogoutButton'; // Import the new button
+import LogoutButton from '@/components/LogoutButton';
+import { Toaster } from 'react-hot-toast';
 
 export default function ProtectedPagesLayout({
     children,
@@ -14,6 +15,7 @@ export default function ProtectedPagesLayout({
             
             <main>
                 {children}
+                <Toaster position="top-center" />
             </main>
         </ProtectedRoute>
     );
