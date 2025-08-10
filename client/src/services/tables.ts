@@ -1,5 +1,5 @@
-import { api } from '@/lib/api';
-import { Table, TableWithOrders } from '@/types/table';
+import { api } from '../lib/api';
+import { Table, TableWithOrders } from '../types/table';
 
 export async function fetchTables(): Promise<TableWithOrders[]> {
   return api.get('/tables/');
