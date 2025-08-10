@@ -63,14 +63,14 @@ export default function InventoryLogModal({ show, onHide, onSave, initialData }:
         if (data.accion === 'Merma' && finalQuantity > 0) {
             finalQuantity = -Math.abs(finalQuantity);
         }
-        
+
         else if (data.accion === 'Entrada de Mercancía' && finalQuantity < 0) {
             finalQuantity = Math.abs(finalQuantity);
         }
 
-        onSave({ 
-            ...data, 
-            cantidad: finalQuantity 
+        onSave({
+            ...data,
+            cantidad: finalQuantity
         });
     };
 
@@ -78,7 +78,7 @@ export default function InventoryLogModal({ show, onHide, onSave, initialData }:
         <Modal show={show} onHide={onHide}>
             <Form onSubmit={handleSubmit(onSubmit)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{isEditing ? 'Ver Registro de Inventario' : 'Ajuste de Inventario Manual'}</Modal.Title>
+                    <Modal.Title>{isEditing ? 'Ver registro de inventario' : 'Ajuste de inventario manual'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form.Group className="mb-3" controlId="producto">
@@ -117,7 +117,7 @@ export default function InventoryLogModal({ show, onHide, onSave, initialData }:
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="cantidad">
-                        <Form.Label>Cantidad a Ajustar</Form.Label>
+                        <Form.Label>Cantidad a ajustar</Form.Label>
                         <Form.Control
                             type="number"
                             {...register("cantidad", {
@@ -133,11 +133,17 @@ export default function InventoryLogModal({ show, onHide, onSave, initialData }:
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="accion">
-                        <Form.Label>Tipo de Acción</Form.Label>
-                        <select {...register("accion", { required: "Debe seleccionar una acción." })} disabled={isEditing}>
+                        <Form.Label>Tipo de acción</Form.Label>
+                        <Form.Select
+                            aria-label="Tipo de acción"
+                            title="Tipo de acción"
+                            {...register("accion", { required: "Debe seleccionar una acción." })}
+                            disabled={isEditing}
+                        >
+                            <option value="">Seleccione una acción...</option>
                             <option value="Entrada de Mercancía">Entrada de Mercancía</option>
                             <option value="Merma">Merma</option>
-                        </select>
+                        </Form.Select>
                     </Form.Group>
 
                 </Modal.Body>

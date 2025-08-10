@@ -14,30 +14,30 @@ export function LoginClient() {
     const router = useRouter();
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
+        e.preventDefault();
+        setError(null);
 
-    try {
-        const data = await login(username, password);
-        if (data.token) {
-            localStorage.setItem('authToken', data.token);
-            router.push('/floor');
+        try {
+            const data = await login(username, password);
+            if (data.token) {
+                localStorage.setItem('authToken', data.token);
+                router.push('/floor');
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An unexpected error occurred.');
+            }
         }
-    } catch (err) {
-        if (err instanceof Error) {
-            setError(err.message);
-        } else {
-            setError('An unexpected error occurred.');
-        }
-    }
-};
+    };
 
     return (
         <div className={styles.mainContainer}>
             <Card className={styles.loginCard}>
                 <Card.Body>
                     <Card.Title as="h2" className="text-center mb-2 fw-bold">
-                        Iniciar Sesión
+                        Iniciar sesión
                     </Card.Title>
                     <Card.Text className="text-center text-muted mb-4">
                         Bienvenido al sistema

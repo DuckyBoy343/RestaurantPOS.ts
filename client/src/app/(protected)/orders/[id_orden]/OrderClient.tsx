@@ -155,48 +155,82 @@ export default function OrderClient() {
     }
 
     return (
-        <div className={styles.pageContainer}>
-            <div className="p-4">
-                <h1 className="text-2xl font-bold">Orden para Mesa {orderInfo.id_mesa}</h1>
+        <div className="container-fluid p-4">
+            {orderInfo.tipo_orden === 'Comer aqui' ? (
+                <h1 className="mb-4">Orden para Mesa {orderInfo.id_mesa}</h1>
+            ) : (
+                <h1 className="mb-4">Pedido para llevar #{orderInfo.id_orden}</h1>
+            )}
 
-                {orderItems.size > 0 && (
-                    <OrderSummary orderItems={orderItems} products={products} />
-                )}
-
-                <div className={styles.container}>
-                    <h2 className={styles.title}>Productos</h2>
-                    {categories.map((category) => (
-                        <div key={category.id_categoria} className={styles.category}>
-                            <h3 className={styles.categoryTitle}>{category.categoria_nombre}</h3>
-                            <div className={styles.productList}>
-                                {products
-                                    .filter(product => product.id_categoria === category.id_categoria)
-                                    .map(product => {
-                                        const quantity = orderItems.get(product.id_producto) || 0;
-                                        return (
-                                            <ProductItem
-                                                key={product.id_producto}
-                                                product={product}
-                                                quantity={quantity}
-                                                onAdd={() => handleAddToOrder(product.id_producto)}
-                                                onRemove={() => handleRemoveFromOrder(product.id_producto)}
-                                            />
-                                        );
-                                    })
-                                }
-                            </div>
+            <div className="row g-4">
+                <div className="col-lg-8">
+                    <div className="card shadow-sm">
+                        <div className="card-header bg-light">
+                            <h4 className="my-0 fw-normal">Productos</h4>
                         </div>
-                    ))}
+                        <div className="card-body">
+                            {categories.map((category) => (
+                                <div key={category.id_categoria} className="mb-4">
+                                    <h5 className="border-bottom pb-2 mb-3">{category.categoria_nombre}</h5>
+                                    <div className="row">
+                                        {products
+                                            .filter(p => p.id_categoria === category.id_categoria)
+                                            .map(product => {
+                                                const quantity = orderItems.get(product.id_producto) || 0;
+                                                return (
+                                                    <div key={product.id_producto} className="col-xl-4 col-md-6 mb-3">
+                                                        <ProductItem
+                                                            product={product}
+                                                            quantity={quantity}
+                                                            onAdd={() => handleAddToOrder(product.id_producto)}
+                                                            onRemove={() => handleRemoveFromOrder(product.id_producto)}
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-lg-4">
+                    <div className={styles.OrderSummary}>
+                        <OrderSummary orderItems={orderItems} products={products} />
+                    </div>
                 </div>
             </div>
-            <div className={styles.footer}>
-                <button onClick={handleSaveOrder} className={styles.submitButton} disabled={orderItems.size === 0}>
-                    {orderItems.size > 1 ? 'Actualizar Pedido' : 'Confirmar Pedido'}
+
+            <div className="footer-actions mt-4 p-3 bg-light border-top d-flex justify-content-between align-items-center">
+                <button
+                    onClick={() => router.push('/floor')}
+                    className="btn btn-secondary btn-lg"
+                >
+                    <i className="bi bi-arrow-left-circle me-2"></i>
+                    Regresar
                 </button>
-                <button onClick={() => setIsCheckoutModalOpen(true)} className={styles.submitButton}>
-                    Finalizar y Cobrar
-                </button>
+
+                <div className="d-flex gap-2">
+                    <button
+                        onClick={handleSaveOrder}
+                        className="btn btn-outline-primary btn-lg"
+                        disabled={orderItems.size === 0}
+                    >
+                        <i className="bi bi-save me-2"></i>
+                        {orderItems.size > 0 ? 'Actualizar Pedido' : 'Guardar Pedido'}
+                    </button>
+                    <button
+                        onClick={() => setIsCheckoutModalOpen(true)}
+                        className="btn btn-success btn-lg"
+                        disabled={orderItems.size === 0}
+                    >
+                        <i className="bi bi-cash-coin me-2"></i>
+                        Finalizar y Cobrar
+                    </button>
+                </div>
             </div>
+
             <CheckoutModal
                 isOpen={isCheckoutModalOpen}
                 onClose={() => setIsCheckoutModalOpen(false)}

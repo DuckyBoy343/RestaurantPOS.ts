@@ -1,34 +1,90 @@
 {
+  "name": "restaurant-pos",
+  "version": "1.0.0",
+  "description": "My Restaurant POS System",
+  "main": "dist/main/index.js",
+  "private": true,
   "scripts": {
-    "dev": "nodemon server/server.ts"
+    "//--- MAIN DEVELOPMENT SCRIPT (for web browser) ---": "",
+    "dev": "concurrently \"npm:dev:client\" \"npm:dev:server\"",
+    "//--- DESKTOP APP TEST SCRIPT ---": "",
+    "desktop:dev": "concurrently \"npm:dev:client\" \"npm:dev:electron\"",
+    "//--- Individual component scripts (helpers) ---": "",
+    "dev:client": "cd client && next dev",
+    "dev:server": "cross-env NODE_ENV=development nodemon server/server.ts",
+    "dev:electron": "npm run build:server && npm run build:electron-main && wait-on http://localhost:3000 && electron .",
+    "//--- Build & Package Scripts (no change here) ---": "",
+    "build:client": "cd client && next build && next export",
+    "build:server": "tsc -p server/tsconfig.json",
+    "build:electron-main": "tsc -p tsconfig.main.json",
+    "build": "npm run build:client && npm run build:server && npm run build:electron-main",
+    "dist": "npm run build && electron-builder",
+    "lint": "cd client && next lint"
   },
   "dependencies": {
-    "@lucia-auth/adapter-postgresql": "^3.1.2",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
-    "cookie-parser": "^1.4.7",
+    "bootstrap": "^5.3.7",
+    "bootstrap-icons": "^1.13.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
     "mssql": "^11.0.1",
-    "postgres": "^3.4.7",
+    "next": "15.4.2",
+    "react": "19.1.0",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.61.1",
     "react-hot-toast": "^2.5.2",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.0.0",
+    "@tailwindcss/postcss": "^4.0.0",
     "@types/bcrypt": "^6.0.0",
     "@types/bcryptjs": "^2.4.6",
-    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/knex": "^0.15.2",
     "@types/mssql": "^9.1.7",
     "@types/node": "^24.0.15",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "concurrently": "^8.2.2",
+    "cross-env": "^10.0.0",
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "15.4.2",
     "nodemon": "^3.1.10",
+    "tailwindcss": "^4.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.yourname.restaurantpos",
+    "productName": "Restaurant POS",
+    "files": [
+      "client/out/**/*",
+      "server/dist/**/*",
+      "dist/main/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "extraResources": [
+      {
+        "from": "server/",
+        "to": "seed-db",
+        "filter": [
+          "Restaurant.db"
+        ]
+      }
+    ]
   }
 }

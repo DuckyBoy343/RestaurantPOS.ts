@@ -36,5 +36,11 @@ app.use('/api/users', authenticateToken, usersRouter);
 app.use('/api/orders', authenticateToken, ordersRouter);
 app.use('/api/inventory', authenticateToken, inventoryRouter);
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server on port ${PORT}`));
+export { app };
+
+if (require.main === module) {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
+}

@@ -1,10 +1,24 @@
 import knex from 'knex';
 import path from 'path';
 
+const isDev = process.env.NODE_ENV !== 'production';
+
+let dbPath: string;
+
+if (isDev) {
+  // Only go up ONE level from 'utils' to the 'server' folder
+  dbPath = path.resolve(__dirname, '../Restaurant.db');
+} else {
+  const { app } = require('electron');
+  dbPath = path.join(app.getPath('userData'), 'Restaurant.db');
+}
+
+console.log(`[DB] Connecting to database at: ${dbPath}`);
+
 const db = knex({
   client: 'sqlite3',
   connection: {
-    filename: path.resolve(__dirname, '../Restaurant.db')
+    filename: dbPath,
   },
   useNullAsDefault: true,
   pool: {

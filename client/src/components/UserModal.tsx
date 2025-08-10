@@ -77,7 +77,7 @@ export default function UserModal({ show, onHide, onSave, initialData, roles }: 
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="id_rol">
                         <Form.Label>Rol</Form.Label>
-                        <select
+                        <Form.Select
                             className="form-control"
                             aria-label="Rol"
                             {...register("id_rol", { required: "Debe seleccionar un rol", valueAsNumber: true })}
@@ -88,7 +88,7 @@ export default function UserModal({ show, onHide, onSave, initialData, roles }: 
                                     {role.rol_nombre}
                                 </option>
                             ))}
-                        </select>
+                        </Form.Select>
                         {errors.id_rol && (
                             <div className="invalid-feedback">{errors.id_rol.message}</div>
                         )}

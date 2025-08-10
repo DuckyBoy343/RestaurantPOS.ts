@@ -1,7 +1,7 @@
 'use client';
 
 import type { Product } from '@/types/product';
-import styles from '@/styles/OrderView.module.css';
+import styles from '@/styles/ProductItem.module.css';
 
 interface ProductItemProps {
   product: Product;
@@ -11,20 +11,35 @@ interface ProductItemProps {
 }
 
 export default function ProductItem({ product, quantity, onAdd, onRemove }: ProductItemProps) {
+  const inOrder = quantity > 0;
+  const displayButtonClass = inOrder ? 'btn-primary' : 'btn-outline-secondary';
+
   return (
-    <div className={styles.productContainer}>
-      <div className={styles.productControls}>
-        <button onClick={onRemove} className={`${styles.quantityButton} ${styles.decrementButton}`}>-</button>
+    <div className="d-inline-flex align-items-center gap-2">
 
-        <div className={styles.productDisplay}>
-          <span className={styles.productName}>{product.producto_nombre}</span>
-          {quantity > 0 && <span className={styles.quantityLabel}>({quantity})</span>}
-        </div>
+      <button
+        className={`btn btn-danger rounded-circle p-0 d-flex justify-content-center align-items-center ${styles.controlButton} ${!inOrder ? styles.hidden : ''}`}
+        onClick={onRemove}
+        aria-label="Remover un producto"
+      >
+        <i className="bi bi-dash-lg"></i>
+      </button>
 
-        <button onClick={onAdd} className={`${styles.quantityButton} ${styles.incrementButton}`}>+</button>
+      <div
+        className={`btn ${displayButtonClass} d-flex flex-column align-items-center px-3 py-2 ${styles.productDisplay}`}
+      >
+        <span className="fw-bold">{product.producto_nombre}</span>
+        {inOrder && <span className="small">({quantity})</span>}
       </div>
 
-      {/* <button className={styles.detailsButton}>detalles</button> */}
+      <button
+        className={`btn btn-success rounded-circle p-0 d-flex justify-content-center align-items-center ${styles.controlButton}`}
+        onClick={onAdd}
+        aria-label="Añadir un producto"
+      >
+        <i className="bi bi-plus-lg"></i>
+      </button>
+
     </div>
   );
 }

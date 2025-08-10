@@ -1,5 +1,4 @@
 import { Product } from '@/types/product';
-import styles from '@/styles/OrderView.module.css';
 
 interface OrderSummaryProps {
     orderItems: Map<number, number>;
@@ -17,25 +16,33 @@ export default function OrderSummary({ orderItems, products }: OrderSummaryProps
     }
 
     return (
-        <div className={styles.orderSummary}>
-            <h3 className={styles.summaryTitle}>Resumen del Pedido</h3>
-            <ul>
-                {[...orderItems.entries()].map(([productId, quantity]) => {
-                    const product = products.find(p => p.id_producto === productId);
-                    if (!product) return null;
+        <div className="card shadow-sm mb-4">
+            <div className="card-header bg-light">
+                <h4 className="my-0 fw-normal">Resumen del Pedido</h4>
+            </div>
+            <div className="card-body">
+                <ul className="list-group list-group-flush">
+                    {[...orderItems.entries()].map(([productId, quantity]) => {
+                        const product = products.find(p => p.id_producto === productId);
+                        if (!product) return null;
 
-                    return (
-                        <li key={productId} className={styles.summaryItem}>
-                            <span>{product.producto_nombre}</span>
-                            <span>x {quantity}</span>
-                            <span>${(product.producto_precio * quantity).toFixed(2)}</span>
-                        </li>
-                    );
-                })}
-            </ul>
-            <div className={styles.summaryTotal}>
-                <span>Total:</span>
-                <span>${orderTotal.toFixed(2)}</span>
+                        return (
+                            <li key={productId} className="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span className="fw-bold">{product.producto_nombre}</span>
+                                    <small className="text-muted ms-2">x {quantity}</small>
+                                </div>
+                                <span className="badge bg-primary rounded-pill fs-6">
+                                    ${(product.producto_precio * quantity).toFixed(2)}
+                                </span>
+                            </li>
+                        );
+                    })}
+                    <li className="list-group-item d-flex justify-content-between align-items-center bg-light fw-bold fs-5">
+                        <span>Total:</span>
+                        <span>${orderTotal.toFixed(2)}</span>
+                    </li>
+                </ul>
             </div>
         </div>
     );

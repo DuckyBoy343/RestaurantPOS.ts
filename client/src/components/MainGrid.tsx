@@ -113,10 +113,10 @@ export default function MainGrid({ title, columns, items, itemNoun, onAddItem, o
 
                             <div className="col-auto">
                                 <Button onClick={onAddItem} className="btn btn-success me-2 d-inline-flex align-items-center">
-                                    <i className="material-icons">&#xE147;</i> <span>Añadir {itemNoun}</span>
+                                    <i className="bi bi-plus-circle-fill"></i> <span>Añadir {itemNoun}</span>
                                 </Button>
                                 <Button onClick={() => handleConfirmDelete()} className="btn btn-danger d-inline-flex align-items-center" disabled={selectedItems.length === 0}>
-                                    <i className="material-icons">&#xE15C;</i> <span>Eliminar</span>
+                                    <i className="bi bi-trash-fill"></i> <span>Eliminar</span>
                                 </Button>
                             </div>
 
@@ -178,10 +178,10 @@ export default function MainGrid({ title, columns, items, itemNoun, onAddItem, o
                                     })}
                                     <td>
                                         <a href="#edit" className="edit" onClick={(e) => { e.preventDefault(); onEditItem(item); }}>
-                                            <i className="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                                            <i className="bi bi-pencil-fill" data-toggle="tooltip" title="Editar"></i>
                                         </a>
                                         <a href="#delete" className="delete" onClick={(e) => { e.preventDefault(); onDeleteItems([item.id]); }}>
-                                            <i className="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                                            <i className="bi bi-trash-fill" data-toggle="tooltip" title="Eliminar"></i>
                                         </a>
                                     </td>
                                 </tr>

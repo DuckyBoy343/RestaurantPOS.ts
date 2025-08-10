@@ -138,14 +138,8 @@
 }
 
 .orderSummary {
-  /* Add these lines to control the size and position */
-  max-width: 450px; /* Adjust this value to your liking */
-  margin: 2rem 0;   /* Adds space above and below the summary */
-
-  /* Optional: These styles will make it look more like a contained box */
-  padding: 1rem;
-  border: 1px solid #444;
-  border-radius: 8px;
+  position: 'sticky';
+  top: '1rem';
 }
 
 .summaryTotal {
