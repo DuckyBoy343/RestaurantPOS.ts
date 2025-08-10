@@ -1,6 +1,6 @@
-import { api } from "@/lib/api";
-import { OrderDetail, OrderDetailUpdate } from "@/types/order";
-import { type Order } from '@/types/order';
+import { api } from "../lib/api";
+import { OrderDetail, OrderDetailUpdate } from "../types/order";
+import { type Order } from '../types/order';
 
 interface CreateOrderResponse {
   newOrder: Order;

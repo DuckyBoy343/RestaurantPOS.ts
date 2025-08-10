@@ -1,0 +1,76 @@
+.mainbody {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+
+.testheader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8); /* Fondo translúcido */
+    padding: 10px 40px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    background-image: linear-gradient(to right, rgb(0 0 0 /.8), rgb(0 0 0 /.7)), url(/public/img/imgheader.jpeg);
+    padding: 4rem 0;
+}
+
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8); /* Fondo translúcido */
+    padding: 10px 40px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+}
+
+/* Logo */
+.navbar .logo {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+    text-decoration: none;
+}
+
+.navbar .logo img {
+    height: 24px;
+    margin-right: 10px;
+}
+
+/* Menú de navegación */
+.navbar ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar ul li {
+    margin-left: 30px;
+}
+
+.navbar ul li a {
+    text-decoration: none;
+    color: #000;
+    padding: 8px 12px;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Opción activa */
+.navbar ul li a.active,
+.navbar ul li a:hover {
+    background-color: #ddd;
+    border-radius: 4px;
+    color: #000;
+}
