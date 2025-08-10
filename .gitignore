@@ -39,3 +39,6 @@ Thumbs.db
 
 # VS Code
 .vscode/
+server/Restaurant.db
+server/Restaurant.db-shm
+server/Restaurant.db-wal
