@@ -3,11 +3,11 @@
 import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { changeTableStatus, fetchTables } from '../../../services/tables.ts';
-import { createOrder } from '../../../services/orders';
-import { type Table, type TableWithOrders } from '../../../types/table';
-import styles from '../../../styles/TableView.module.css';
-import Modal from '../../../components/Modal';
+import { changeTableStatus, fetchTables } from '@/services/tables';
+import { createOrder } from '@/services/orders';
+import { type Table, type TableWithOrders } from '@/types/table';
+import styles from '@/styles/TableView.module.css';
+import Modal from '@/components/Modal';
 
 export default function FloorClient() {
     const router = useRouter();
@@ -164,7 +164,7 @@ export default function FloorClient() {
             onConfirm={handleConfirmOrder}
             isProcessing={isProcessing}
         >
-            <p>Â¿Desea abrir una nueva orden para la Mesa {selectedTable?.mesa_nombre}?</p>
+            <p>¿Desea abrir una nueva orden para la Mesa {selectedTable?.mesa_nombre}?</p>
         </Modal>
     </div>
 );

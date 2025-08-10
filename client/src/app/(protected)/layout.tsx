@@ -1,8 +1,8 @@
-import ProtectedRoute from '../../components/ProtectedRoute';
-import LogoutButton from '../../components/LogoutButton';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import LogoutButton from '@/components/LogoutButton';
 import { Toaster } from 'react-hot-toast';
-import LeftHeader from "../../components/LeftMenu.tsx"; 
-import MainMenu from '../../components/HeaderMenu.tsx';
+import LeftHeader from "@/components/LeftMenu"; 
+import MainMenu from '@/components/HeaderMenu';
 
 export default function ProtectedPagesLayout({
   children,

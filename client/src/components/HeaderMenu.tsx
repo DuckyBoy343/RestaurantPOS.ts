@@ -16,7 +16,7 @@ export default function MainMenu() {
 
                 <section className="offcanvas offcanvas-start bg-dark" id="menuLateral" tabIndex={-1}>
                     <div className="offcanvas-header" data-bs-theme="dark">
-                        <h5 className="offcanvas-title text-info fw-semibold fs-4">MenÃº</h5>
+                        <h5 className="offcanvas-title text-info fw-semibold fs-4">Menú</h5>
                         <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
 
