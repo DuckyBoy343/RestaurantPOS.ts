@@ -1,9 +1,10 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
 import { Table, TableWithOrders } from '../types/Table';
+import { Knex } from 'knex';
 
 export async function getTables(): Promise<TableWithOrders[]> {
   const tables = await db('mesas as m')
-    .leftJoin('ordenes as o', function() {
+    .leftJoin('ordenes as o', function(this: Knex.JoinClause) {
       this.on('m.id_mesa', '=', 'o.id_mesa')
           .andOn('o.estado', '=', db.raw('1'));
     })
@@ -18,7 +19,7 @@ export async function getTables(): Promise<TableWithOrders[]> {
 }
 
 export async function getTableById(id_mesa: number): Promise<Table | undefined> {
-  return await db<Table>('mesas')
+  return await db('mesas')
     .where({ id_mesa })
     .first();
 }

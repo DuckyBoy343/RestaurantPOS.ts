@@ -1,12 +1,12 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
 import { Category } from '../types/Category';
 
 export async function getCategories(): Promise<Category[]> {
-  return await db<Category>('categorias').select('*');
+  return await db('categorias').select('*');
 }
 
 export async function getCategoryById(id_categoria: number): Promise<Category | undefined> {
-  return await db<Category>('categorias')
+  return await db('categorias')
     .where({ id_categoria })
     .first();
 }

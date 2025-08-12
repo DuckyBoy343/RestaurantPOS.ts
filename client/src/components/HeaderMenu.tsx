@@ -10,15 +10,24 @@ export default function MainMenu() {
                     <i className="bi bi-house-door-fill me-2"></i>
                     Restaurant
                 </Link>
-
-
-                {/* <div className="row w-100 text-right"> */}
-                    {/* <div className="col"> */}
-                        <button className='navbar-toggler' type="button" data-bs-toggle="offcanvas" data-bs-target="#menuLateral">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                    {/* </div> */}
-                {/* </div> */}
+                <button
+                    className='navbar-toggler'
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#menuLateral"
+                    title="Abrir menú lateral"
+                >
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <button
+                    className='navbar-toggler'
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#menuLateral"
+                    title="Abrir menú lateral"
+                >
+                    <span className="navbar-toggler-icon"></span>
+                </button>
 
                 <section className="offcanvas offcanvas-start bg-dark" id="menuLateral" tabIndex={-1}>
                     <div className="offcanvas-header" data-bs-theme="dark">
@@ -56,7 +65,6 @@ export default function MainMenu() {
 
                                 </ul>
                             </li>
-                            {/* Add more links as needed */}
                         </ul>
 
                         <div className="d-long d-md-flex justify-content-center p-3">

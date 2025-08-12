@@ -1,14 +1,12 @@
 .controlButton {
   width: 40px;
   height: 40px;
+  flex: 0 0 40px;
 }
 
 .productDisplay {
-  min-width: 150px;
-  cursor: default;
-  transition: all 0.2s ease-in-out;
+  min-height: 64px;      /* makes tiles feel roomier */
+  text-align: center;    /* keep labels centered on multiple lines */
 }
 
-.hidden {
-  visibility: hidden;
-}
+.hidden { visibility: hidden; } /* keeps layout from shifting */

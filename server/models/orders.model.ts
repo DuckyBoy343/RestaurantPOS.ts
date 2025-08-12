@@ -1,12 +1,12 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
 import { Order } from '../types/Order';
 
 export async function getOrders(): Promise<Order[]> {
-    return await db<Order>('ordenes').select('*');
+    return await db('ordenes').select('*');
 }
 
 export async function getOrderById(id_orden: number): Promise<Order | undefined> {
-    return await db<Order>('ordenes')
+    return await db('ordenes')
         .where({ id_orden })
         .first();
 }

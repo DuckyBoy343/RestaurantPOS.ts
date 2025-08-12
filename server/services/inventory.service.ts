@@ -1,4 +1,5 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
+import { Knex } from 'knex';
 
 interface AdjustmentData {
     id_producto: number;
@@ -14,7 +15,7 @@ export async function adjustProductInventory(data: AdjustmentData): Promise<any>
         throw { status: 400, message: 'La cantidad del ajuste no puede ser cero.' };
     }
 
-    return db.transaction(async (trx) => {
+    return db.transaction(async (trx: Knex.Transaction) => {
         const product = await trx('productos').where({ id_producto }).first();
         if (!product) {
             throw { status: 404, message: 'El producto no fue encontrado.' };
@@ -43,7 +44,7 @@ export async function adjustProductInventory(data: AdjustmentData): Promise<any>
                 "b.accion"
             )
             .where("b.id_bitacora_inventario", newLogEntry.id_bitacora_inventario)
-            .first(); // Use .first() because we are fetching a single entry
+            .first();
 
         return fullNewLogEntry;
     });

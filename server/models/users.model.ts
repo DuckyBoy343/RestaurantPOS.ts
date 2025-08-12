@@ -1,4 +1,4 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
 import { User } from '../types/User';
 
 export async function getUsers(): Promise<User[]> {
@@ -16,13 +16,13 @@ export async function getUsers(): Promise<User[]> {
 }
 
 export async function getUserById(id_usuario: number): Promise<User | undefined> {
-  return await db<User>('usuarios')
+  return await db('usuarios')
     .where({ id_usuario })
     .first();
 }
 
 export async function getUserByUsername(usuario_nombre: string): Promise<User | undefined> {
-  return await db<User>('usuarios')
+  return await db('usuarios')
     .where({ usuario_nombre })
     .first();
 }

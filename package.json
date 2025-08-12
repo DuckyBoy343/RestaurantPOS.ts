@@ -5,16 +5,13 @@
   "main": "dist/main/index.js",
   "private": true,
   "scripts": {
-    "//--- MAIN DEVELOPMENT SCRIPT (for web browser) ---": "",
-    "dev": "concurrently \"npm:dev:client\" \"npm:dev:server\"",
-    "//--- DESKTOP APP TEST SCRIPT ---": "",
+    "dev": "concurrently \"npm:dev:client\" \"npm:watch:server\"",
     "desktop:dev": "concurrently \"npm:dev:client\" \"npm:dev:electron\"",
-    "//--- Individual component scripts (helpers) ---": "",
     "dev:client": "cd client && next dev",
-    "dev:server": "cross-env NODE_ENV=development nodemon server/server.ts",
+    "watch:server": "tsc-watch --noClear -p server/tsconfig.json --onSuccess \"npm run start:server\"",
+    "start:server": "node server/dist/server.js",
     "dev:electron": "npm run build:server && npm run build:electron-main && wait-on http://localhost:3000 && electron .",
-    "//--- Build & Package Scripts (no change here) ---": "",
-    "build:client": "cd client && next build && next export",
+    "build:client": "cd client && next build",
     "build:server": "tsc -p server/tsconfig.json",
     "build:electron-main": "tsc -p tsconfig.main.json",
     "build": "npm run build:client && npm run build:server && npm run build:electron-main",
@@ -68,22 +65,29 @@
   "build": {
     "appId": "com.yourname.restaurantpos",
     "productName": "Restaurant POS",
-    "files": [
-      "client/out/**/*",
-      "server/dist/**/*",
-      "dist/main/**/*",
-      "package.json"
-    ],
     "directories": {
       "output": "dist"
     },
+    "files": [
+      "dist/**/*",
+      "server/dist/**/*",
+      "package.json"
+    ],
     "extraResources": [
       {
-        "from": "server/",
+        "from": "client/out",
+        "to": "client/out"
+      },
+      {
+        "from": "server",
         "to": "seed-db",
         "filter": [
           "Restaurant.db"
         ]
+      },
+      {
+        "from": ".env",
+        "to": ".env"
       }
     ]
   }

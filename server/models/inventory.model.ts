@@ -1,4 +1,4 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
 import { InventoryLog } from '../types/Inventory';
 
 export async function getInventoryLog(): Promise<InventoryLog[]> {
@@ -16,7 +16,7 @@ export async function getInventoryLog(): Promise<InventoryLog[]> {
 }
 
 export async function getInventoryLogById(id_bitacora_inventario: number): Promise<InventoryLog | undefined> {
-    return await db<InventoryLog>('bitacora_inventarios')
+    return await db('bitacora_inventarios')
         .where({ id_bitacora_inventario })
         .first();
 }

@@ -1,4 +1,4 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
 import { Role } from '../types/Role';
 
 export async function getRoles(): Promise<Role[]> {
@@ -6,7 +6,7 @@ export async function getRoles(): Promise<Role[]> {
 }
 
 export async function getRoleById(id_rol: number): Promise<Role | undefined> {
-  return await db<Role>('roles')
+  return await db('roles')
     .where({ id_rol })
     .first();
 }

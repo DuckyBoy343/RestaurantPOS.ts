@@ -8,6 +8,7 @@ import { createOrder } from '@/services/orders';
 import { type Table, type TableWithOrders } from '@/types/table';
 import styles from '@/styles/TableView.module.css';
 import Modal from '@/components/Modal';
+import { navigate } from '@/utils/navigate';
 
 export default function FloorClient() {
     const router = useRouter();
@@ -22,7 +23,7 @@ export default function FloorClient() {
             setSelectedTable(table);
             setIsModalOpen(true);
         } else {
-            router.push(`/orders/${table.id_orden}`);
+            navigate(router, `/orders?id=${table.id_orden}`);
         }
     };
 
@@ -56,7 +57,7 @@ export default function FloorClient() {
 
             if (newOrderData && newOrderData.id_orden) {
                 await changeTableStatus(selectedTable.id_mesa, false);
-                router.push(`/orders/${newOrderData.id_orden}`);
+                navigate(router, `/orders?id=${newOrderData.id_orden}`);
             } else {
                 throw new Error('Could not create the order correctly');
             }
@@ -81,7 +82,7 @@ export default function FloorClient() {
             const newOrderData = response.newOrder;
 
             if (newOrderData && newOrderData.id_orden) {
-                router.push(`/orders/${newOrderData.id_orden}`);
+                navigate(router, `/orders?id=${newOrderData.id_orden}`);
             } else {
                 throw new Error('No se pudo crear la orden para llevar.');
             }
@@ -99,73 +100,69 @@ export default function FloorClient() {
     }
 
     return (
-    <div className="container py-4">
-        <h1 className="mb-4 border-bottom pb-3">Punto de Venta</h1>
+        <div className="container py-4">
+            <h1 className="mb-4 border-bottom pb-3">Punto de venta</h1>
 
-        {/* --- Grid for Tables --- */}
-        <h2 className="mb-3">Mesas</h2>
-        <div className="row g-4">
-            {tables.map((table) => {
-                const isAvailable = table.mesa_estatus;
-                const cardBg = isAvailable ? 'bg-light' : 'bg-danger';
-                const textColor = isAvailable ? 'text-dark' : 'text-white';
-                const statusText = isAvailable ? 'Disponible' : 'Ocupada';
+            {/* --- Grid for Tables --- */}
+            <h2 className="mb-3">Mesas</h2>
+            <div className="row g-4">
+                {tables.map((table) => {
+                    const isAvailable = table.mesa_estatus;
+                    const cardBg = isAvailable ? 'bg-light' : 'bg-danger';
+                    const textColor = isAvailable ? 'text-dark' : 'text-white';
+                    const statusText = isAvailable ? 'Disponible' : 'Ocupada';
 
-                return (
-                    <div key={table.id_mesa} className="col-12 col-md-6 col-lg-3">
-                        <div
-                            className={`card h-100 shadow-sm ${cardBg} ${textColor}`}
-                            onClick={() => handleTableClick(table)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <div className="card-header fw-bold fs-5">
-                                Mesa {table.mesa_nombre}
-                            </div>
-                            <div className="card-body text-center d-flex flex-column justify-content-center">
-                                {isAvailable ? (
-                                    <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '2.5rem' }}></i>
-                                ) : (
-                                    <i className="bi bi-stop-circle-fill text-white" style={{ fontSize: '2.5rem' }}></i>
-                                )}
-                                <p className="card-text mt-2">{statusText}</p>
+                    return (
+                        <div key={table.id_mesa} className="col-12 col-md-6 col-lg-3">
+                            <div
+                                className={`card h-100 shadow-sm ${cardBg} ${textColor} ${styles.clickableCard}`}
+                                onClick={() => handleTableClick(table)}
+                            >
+                                <div className="card-header fw-bold fs-5">
+                                    Mesa {table.mesa_nombre}
+                                </div>
+                                <div className="card-body text-center d-flex flex-column justify-content-center">
+                                    {isAvailable ? (
+                                        <i className={`bi bi-check-circle-fill text-success ${styles.statusIcon}`}></i>
+                                    ) : (
+                                        <i className={`bi bi-stop-circle-fill text-white ${styles.statusIcon}`}></i>
+                                    )}
+                                    <p className="card-text mt-2">{statusText}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                );
-            })}
-        </div>
-        
-        <hr className="my-4"/>
+                    );
+                })}
+            </div>
 
-        {/* --- Grid for Takeout --- */}
-        <h2 className="mb-3">Para llevar</h2>
-        <div className="row g-4">
-            <div className="col-12 col-md-6 col-lg-3">
-                <div 
-                    className="card text-white bg-success h-100 shadow-sm" 
-                    onClick={handleTakeoutOrder} 
-                    style={{ cursor: 'pointer' }}
-                    disabled={isProcessing}
-                >
-                    <div className="card-body text-center d-flex flex-column justify-content-center">
-                        <i className="bi bi-bag-check-fill" style={{ fontSize: '2.5rem' }}></i>
-                        <h4 className="card-title mt-2">
-                            {isProcessing ? 'Creando...' : 'Pedido para llevar'}
-                        </h4>
+            <hr className="my-4" />
+
+            {/* --- Grid for Takeout --- */}
+            <h2 className="mb-3">Para llevar</h2>
+            <div className="row g-4">
+                <div className="col-12 col-md-6 col-lg-3">
+                    <div
+                        className={`card text-white bg-success h-100 shadow-sm ${styles.clickableCard} ${isProcessing ? styles.disabledCard : ''}`}
+                        onClick={isProcessing ? undefined : handleTakeoutOrder}
+                    >
+                        <div className="card-body text-center d-flex flex-column justify-content-center">
+                            <i className={`bi bi-bag-check-fill ${styles.statusIcon}`}></i>
+                            <h4 className="card-title mt-2">
+                                {isProcessing ? 'Creando...' : 'Pedido para llevar'}
+                            </h4>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {/* Your Modal remains unchanged */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={handleConfirmOrder}
+            >
+                <p>¿Desea abrir una nueva orden para la Mesa {selectedTable?.mesa_nombre}?</p>
+            </Modal>
         </div>
-        
-        {/* Your Modal remains unchanged */}
-        <Modal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onConfirm={handleConfirmOrder}
-            isProcessing={isProcessing}
-        >
-            <p>¿Desea abrir una nueva orden para la Mesa {selectedTable?.mesa_nombre}?</p>
-        </Modal>
-    </div>
-);
+    );
 }

@@ -1,4 +1,4 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
 import { Product } from '../types/Product';
 
 export async function getAllProducts(): Promise<Product[]> {
@@ -20,7 +20,7 @@ export async function getAllProducts(): Promise<Product[]> {
 }
 
 export async function getProductById(id_producto: number): Promise<Product | undefined> {
-  return await db<Product>('productos')
+  return await db('productos')
     .where({ id_producto })
     .first();
 }

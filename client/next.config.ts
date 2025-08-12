@@ -1,14 +1,12 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:4000/api/:path*',
-      },
-    ];
+/** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production';
+const nextConfig = {
+  output: 'export',
+  assetPrefix: isProd ? './' : undefined,
+  images: {
+    unoptimized: true,
   },
+  trailingSlash: false,
 };
 
-export default nextConfig;
+module.exports = nextConfig;

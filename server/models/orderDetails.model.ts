@@ -1,5 +1,6 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
 import { OrderDetail } from '../types/OrderDetail';
+import { Knex } from 'knex';
 
 type OrderDetailInsert = {
     id_producto: number;
@@ -9,16 +10,16 @@ type OrderDetailInsert = {
 }
 
 export async function getOrderDetails(): Promise<OrderDetail[]> {
-    return await db<OrderDetail>('detalle_ordenes').select('*');
+    return await db('detalle_ordenes').select('*');
 }
 
 export async function getOrderDetailsByOrderId(id_orden: number): Promise<OrderDetail[]> {
-    return await db<OrderDetail>('detalle_ordenes')
+    return await db('detalle_ordenes')
         .where({ id_orden });
 }
 
 export async function getOrderDetailById(id_detalle_orden: number): Promise<OrderDetail | undefined> {
-    return await db<OrderDetail>('detalle_ordenes')
+    return await db('detalle_ordenes')
         .where({ id_detalle_orden })
         .first();
 }
@@ -49,7 +50,7 @@ export async function addMultipleDetails(id_orden: number, details: OrderDetailI
 }
 
 export async function updateMultipleDetails(id_orden: number, details: OrderDetailInsert[]): Promise<void> {
-    await db.transaction(async trx => {
+    await db.transaction(async (trx: Knex.Transaction) => {
         const incomingProductsIds = new Set(details.map(d => d.id_producto));
 
         await trx('detalle_ordenes')

@@ -6,6 +6,7 @@ import { login } from '@/services/auth';
 import styles from '@/styles/Login.module.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { Button, Form, Card, InputGroup, Alert } from 'react-bootstrap';
+import { navigate } from '@/utils/navigate';
 
 export function LoginClient() {
     const [username, setUsername] = useState('');
@@ -21,7 +22,7 @@ export function LoginClient() {
             const data = await login(username, password);
             if (data.token) {
                 localStorage.setItem('authToken', data.token);
-                router.push('/floor');
+                navigate(router, '/floor'); 
             }
         } catch (err) {
             if (err instanceof Error) {

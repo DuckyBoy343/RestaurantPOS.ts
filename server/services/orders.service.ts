@@ -1,6 +1,7 @@
-import db from '../utils/db';
+import { db } from '../utils/db';
 import * as OrderModel from '../models/orders.model';
 import * as TableModel from '../models/tables.model';
+import { Knex } from 'knex';
 
 export async function moveOrderToTable(id_orden: number, new_id_mesa: number): Promise<void> {
   const order = await OrderModel.getOrderById(id_orden);
@@ -18,7 +19,7 @@ export async function moveOrderToTable(id_orden: number, new_id_mesa: number): P
   }
 
   try {
-    await db.transaction(async (trx) => {
+    await db.transaction(async (trx: Knex.Transaction) => {
       await trx('ordenes')
         .where({ id_orden: id_orden })
         .update({ id_mesa: new_id_mesa });
@@ -38,7 +39,7 @@ export async function moveOrderToTable(id_orden: number, new_id_mesa: number): P
 }
 
 export async function closeOrder(id_orden: number, venta_metodo_pago: string): Promise<void> {
-  await db.transaction(async (trx) => {
+  await db.transaction(async (trx: Knex.Transaction) => {
     const order = await trx('ordenes').where({ id_orden }).first();
     if (!order) {
       throw new Error('Order not found');
