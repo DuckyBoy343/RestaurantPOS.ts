@@ -8,7 +8,6 @@ const serverPort = 4000;
 
 function setupDatabase() {
   if (isDev) return;
-  // ... (This function remains the same as before)
   const userDataPath = app.getPath('userData');
   const dbName = 'Restaurant.db';
   const destinationDbPath = path.join(userDataPath, dbName);
@@ -41,24 +40,19 @@ function createWindow() {
     win.loadURL('app-protocol://client/out/login.html');
   }
 
-  // Updated IPC handler with better query parameter handling
   ipcMain.on('navigate', (event, pathWithQuery) => {
-    // Parse the URL properly
-    const url = new URL(pathWithQuery, 'http://localhost'); // Use dummy base for parsing
+    const url = new URL(pathWithQuery, 'http://localhost');
     const pathname = url.pathname;
-    const queryString = url.search; // This includes the '?' prefix
+    const queryString = url.search;
 
     let newUrl = '';
 
-    // Handle the root path
     if (pathname === '/' || pathname === '/login') {
       newUrl = `app-protocol://client/out/login.html`;
     } else {
-      // Construct the correct file path
       newUrl = `app-protocol://client/out${pathname}.html`;
     }
     
-    // Add query parameters back if they exist
     if (queryString) {
       newUrl += queryString;
     }
@@ -74,36 +68,91 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app-protocol', privileges: { secure: true, standard: true, supportFetchAPI: true } },
 ]);
 
+function debugFileStructure(): void {
+  const clientPath = path.join(process.resourcesPath, 'client');
+  console.log(`[DEBUG] Client path: ${clientPath}`);
+  
+  try {
+    const listFiles = (dir: string, prefix: string = ''): void => {
+      const files = fs.readdirSync(dir);
+      files.forEach((file: string) => {
+        const filePath = path.join(dir, file);
+        const stats = fs.statSync(filePath);
+        if (stats.isDirectory()) {
+          console.log(`[DEBUG] ${prefix}📁 ${file}/`);
+          if (prefix.length < 20) {
+            listFiles(filePath, prefix + '  ');
+          }
+        } else {
+          console.log(`[DEBUG] ${prefix}📄 ${file}`);
+        }
+      });
+    };
+    
+    listFiles(clientPath);
+  } catch (error) {
+    console.error('[DEBUG] Error reading client directory:', error);
+  }
+}
+
 app.whenReady().then(() => {
   setupDatabase();
 
-  // Define the production paths
   const prodDbPath = path.join(app.getPath('userData'), 'Restaurant.db');
   const prodEnvPath = path.join(process.resourcesPath, '.env');
 
-  // Start the server and PASS both paths to it
   const serverPath = path.resolve(__dirname, '../../server/dist/server.js');
   const { startServer } = require(serverPath);
   startServer(prodDbPath, prodEnvPath);
 
-  // Register the protocol handler - using buffer protocol for better control
   protocol.registerBufferProtocol('app-protocol', (request, callback) => {
     try {
-      // Parse the URL and remove query parameters
       const url = new URL(request.url);
       const pathWithoutQuery = url.pathname;
-      const cleanPath = pathWithoutQuery.replace('/client/', '');
-      const filePath = path.join(process.resourcesPath, 'client', cleanPath);
+      
+      let cleanPath = pathWithoutQuery;
+      
+      if (cleanPath.startsWith('/client/')) {
+        cleanPath = cleanPath.replace('/client/', '');
+      }
+      
+      let filePath;
+      
+      if (cleanPath.includes('/_next/')) {
+        const nextIndex = cleanPath.indexOf('/_next/');
+        const nextPath = cleanPath.substring(nextIndex + 1);
+        filePath = path.join(process.resourcesPath, 'client', 'out', nextPath);
+      } else if (cleanPath.startsWith('out/_next/') || cleanPath.startsWith('/_next/')) {
+        const nextPath = cleanPath.replace(/^\/?out\/?/, '').replace(/^\/?_next\//, '_next/');
+        filePath = path.join(process.resourcesPath, 'client', 'out', nextPath);
+      } else if (cleanPath.startsWith('out/')) {
+        filePath = path.join(process.resourcesPath, 'client', cleanPath);
+      } else {
+        filePath = path.join(process.resourcesPath, 'client', 'out', cleanPath);
+      }
       
       console.log(`[Protocol] Original URL: ${request.url}`);
       console.log(`[Protocol] Clean path: ${cleanPath}`);
       console.log(`[Protocol] File path: ${filePath}`);
       
-      if (fs.existsSync(filePath)) {
-        const data = fs.readFileSync(filePath);
-        const extension = path.extname(filePath).toLowerCase();
+      const possiblePaths = [
+        filePath,
+        path.join(process.resourcesPath, 'client', cleanPath),
+        path.join(process.resourcesPath, 'client', 'out', cleanPath)
+      ];
+      
+      let foundPath = null;
+      for (const possiblePath of possiblePaths) {
+        if (fs.existsSync(possiblePath)) {
+          foundPath = possiblePath;
+          break;
+        }
+      }
+      
+      if (foundPath) {
+        const data = fs.readFileSync(foundPath);
+        const extension = path.extname(foundPath).toLowerCase();
         
-        // Determine MIME type
         let mimeType = 'text/plain';
         switch (extension) {
           case '.html':
@@ -128,14 +177,26 @@ app.whenReady().then(() => {
           case '.svg':
             mimeType = 'image/svg+xml';
             break;
+          case '.ico':
+            mimeType = 'image/x-icon';
+            break;
+          case '.woff':
+          case '.woff2':
+            mimeType = 'font/woff2';
+            break;
+          case '.ttf':
+            mimeType = 'font/ttf';
+            break;
         }
         
+        console.log(`[Protocol] File found at: ${foundPath}`);
         callback({
           mimeType,
           data
         });
       } else {
-        console.error(`[Protocol] File not found: ${filePath}`);
+        console.error(`[Protocol] File not found in any of these locations:`);
+        possiblePaths.forEach(p => console.error(`  - ${p}`));
         callback({ error: -6 }); // FILE_NOT_FOUND
       }
     } catch (error) {
@@ -143,6 +204,8 @@ app.whenReady().then(() => {
       callback({ error: -2 }); // GENERIC_FAILURE
     }
   });
+
+  debugFileStructure();
 
   createWindow();
 });

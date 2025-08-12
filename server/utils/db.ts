@@ -26,5 +26,4 @@ export function initializeDatabase(dbPath: string) {
   return db;
 }
 
-// This allows other files to import 'db' directly after it's been initialized
 export { dbInstance as db };

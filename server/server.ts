@@ -58,7 +58,6 @@ export function startServer(dbPath: string, envPath: string) {
   });
 }
 
-// This block runs for `npm run dev`
 if (require.main === module) {
   console.log('[Dev Mode] Starting server...');
   const devDbPath = path.resolve(__dirname, '../Restaurant.db');
@@ -66,5 +65,4 @@ if (require.main === module) {
   startServer(devDbPath, devEnvPath);
 }
 
-// Export the app for other potential uses if needed
 export { app };

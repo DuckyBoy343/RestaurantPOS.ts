@@ -1,24 +1,17 @@
-import Link from 'next/link';
+'use client';
+
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import LogOutButton from '@/components/LogoutButton';
+import { CustomLink } from '@/components/CustomLink'; // Adjust path as needed
 
 export default function MainMenu() {
     return (
         <nav className="navbar navbar-dark bg-dark">
             <div className='container-fluid'>
-                <Link className="navbar-brand" href="/floor">
+                <CustomLink className="navbar-brand" href="/floor">
                     <i className="bi bi-house-door-fill me-2"></i>
                     Restaurant
-                </Link>
-                <button
-                    className='navbar-toggler'
-                    type="button"
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#menuLateral"
-                    title="Abrir menú lateral"
-                >
-                    <span className="navbar-toggler-icon"></span>
-                </button>
+                </CustomLink>
                 <button
                     className='navbar-toggler'
                     type="button"
@@ -38,31 +31,43 @@ export default function MainMenu() {
                     <div className="offcanvas-body d-flex flex-column justify-content-between px-0">
                         <ul className="navbar-nav fs-5 justify-content-evenly">
                             <li className="nav-item p-3 py-md-1">
-                                <Link href="/floor" className="nav-link">Piso de venta</Link>
+                                <CustomLink href="/floor" className="nav-link">
+                                    Piso de venta
+                                </CustomLink>
                             </li>
                             <li className="nav-item dropdown p-3 py-md-1">
-                                {/* <Link href="/protected/tables" className="nav-link">Configuración</Link> */}
                                 <a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">Configuración</a>
                                 <ul className="dropdown-menu dropdown-menu-dark">
                                     <li>
-                                        <Link href="/dashboard/tables" className="dropdown-item">Mesas</Link>
+                                        <CustomLink href="/dashboard/tables" className="dropdown-item">
+                                            Mesas
+                                        </CustomLink>
                                     </li>
                                     <li>
-                                        <Link href="/dashboard/products" className="dropdown-item">Productos</Link>
+                                        <CustomLink href="/dashboard/products" className="dropdown-item">
+                                            Productos
+                                        </CustomLink>
                                     </li>
                                     <li>
-                                        <Link href="/dashboard/categories" className="dropdown-item">Categorías</Link>
+                                        <CustomLink href="/dashboard/categories" className="dropdown-item">
+                                            Categorías
+                                        </CustomLink>
                                     </li>
                                     <li>
-                                        <Link href="/dashboard/users" className="dropdown-item">Usuarios</Link>
+                                        <CustomLink href="/dashboard/users" className="dropdown-item">
+                                            Usuarios
+                                        </CustomLink>
                                     </li>
                                     <li>
-                                        <Link href="/dashboard/inventory" className="dropdown-item">Bitacora de inventarios</Link>
+                                        <CustomLink href="/dashboard/inventory" className="dropdown-item">
+                                            Bitacora de inventarios
+                                        </CustomLink>
                                     </li>
                                     <li>
-                                        <Link href="/dashboard/roles" className="dropdown-item">Roles</Link>
+                                        <CustomLink href="/dashboard/roles" className="dropdown-item">
+                                            Roles
+                                        </CustomLink>
                                     </li>
-
                                 </ul>
                             </li>
                         </ul>
@@ -70,7 +75,6 @@ export default function MainMenu() {
                         <div className="d-long d-md-flex justify-content-center p-3">
                             <LogOutButton />
                         </div>
-
                     </div>
                 </section>
             </div>
